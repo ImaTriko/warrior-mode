@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WARRIOR MODE: OMEGA</title>
     
-    <!-- GOOGLE ADSENSE VERIFICATION CODE -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922901026081981"
-     crossorigin="anonymous"></script>
-    <!-- END ADSENSE CODE -->
-
+    <!-- FAVICON (Browser Tab Logo) -->
+    <link rel="icon" type="image/png" href="logo.png">
+    
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <!-- GLOBAL GOOGLE ADSENSE SCRIPT -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922901026081981"
+     crossorigin="anonymous"></script>
 
     <style>
         /* --- THEME ENGINE --- */
@@ -118,6 +120,97 @@
         .share-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .share-card-stat { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; }
         .share-card-footer { margin-top: 20px; font-size: 12px; opacity: 0.7; }
+
+        /* Ad Container Styling */
+        .ad-container {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            min-height: 100px; /* Increased slightly for responsive ads */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .ad-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .ad-placeholder {
+            width: 100%;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Progress Bar Animation */
+        @keyframes progress-glow {
+            0% { box-shadow: 0 0 5px var(--primary); }
+            50% { box-shadow: 0 0 15px var(--primary); }
+            100% { box-shadow: 0 0 5px var(--primary); }
+        }
+        .progress-glow {
+            animation: progress-glow 2s infinite;
+        }
+
+        /* Streak Fire Animation */
+        @keyframes streak-fire {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        .streak-fire {
+            animation: streak-fire 1.5s infinite;
+            color: #ff9900;
+        }
+
+        /* Profile Picture */
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        /* Ad Simulation Modal */
+        #ad-modal {
+            background: rgba(0, 0, 0, 0.9);
+        }
+        .ad-simulation {
+            width: 300px;
+            height: 250px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .ad-timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .ad-content {
+            padding: 20px;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col relative select-none">
@@ -130,15 +223,16 @@
         <!-- Profile -->
         <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('profile')">
             <div class="relative">
-                <div class="w-12 h-12 rounded bg-gradient-to-t from-gray-900 to-gray-700 border border-white/20 flex items-center justify-center">
-                    <i class="fas fa-user-astronaut text-2xl text-gray-300"></i>
+                <div id="profile-pic-container" class="w-12 h-12 rounded bg-gradient-to-t from-gray-900 to-gray-700 border border-white/20 flex items-center justify-center overflow-hidden">
+                    <img id="profile-pic" src="" alt="Profile" class="profile-pic hidden">
+                    <i id="profile-default-icon" class="fas fa-user-astronaut text-2xl text-gray-300"></i>
                 </div>
                 <div class="absolute -bottom-1 -right-1 bg-[var(--accent)] text-black text-[9px] font-bold px-1 rounded shadow">LVL <span id="hud-lvl">1</span></div>
             </div>
             <div>
                 <h2 id="hud-name" class="font-orbitron font-bold text-white leading-none uppercase tracking-wider">PLAYER</h2>
                 <div class="w-24 h-1.5 bg-gray-800 mt-1.5 rounded-full overflow-hidden">
-                    <div id="hud-xp-bar" class="h-full bg-[var(--primary)] w-0 transition-all duration-500 shadow-[0_0_5px_var(--primary)]"></div>
+                    <div id="hud-xp-bar" class="h-full bg-[var(--primary)] w-0 transition-all duration-500 shadow-[0_0_5px_var(--primary)] progress-glow"></div>
                 </div>
             </div>
         </div>
@@ -159,6 +253,7 @@
         <div class="text-right">
             <div class="flex items-center justify-end gap-2 text-[var(--accent)] font-mono font-bold text-lg">
                 <span id="hud-gold">0</span> <i class="fas fa-coins text-xs"></i>
+                <span id="hud-tokens" class="ml-2 text-blue-400">0</span> <i class="fas fa-gem text-xs text-blue-400"></i>
             </div>
             <div class="flex items-center gap-1 mt-1">
                 <i class="fas fa-heart text-red-600 text-xs animate-pulse"></i>
@@ -178,8 +273,24 @@
             <div class="flex justify-between items-end mb-4">
                 <h1 class="text-2xl font-orbitron text-white">PROTOCOLS</h1>
                 <div class="flex gap-2">
+                    <button onclick="openModal('achievements')" class="bg-purple-600 text-white w-8 h-8 rounded flex items-center justify-center hover:scale-110 transition shadow-lg"><i class="fas fa-trophy"></i></button>
                     <button onclick="openModal('archive-habits')" class="bg-gray-700 text-white w-8 h-8 rounded flex items-center justify-center hover:scale-110 transition shadow-lg"><i class="fas fa-archive"></i></button>
                     <button onclick="openModal('create-habit')" class="bg-[var(--primary)] text-black w-8 h-8 rounded flex items-center justify-center hover:scale-110 transition shadow-lg"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- Daily Streak Widget -->
+            <div class="glass p-3 rounded-lg mb-4 flex justify-between items-center border-l-2 border-orange-500">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-orange-900/50 rounded flex items-center justify-center text-orange-400"><i class="fas fa-fire streak-fire"></i></div>
+                    <div>
+                        <div class="text-xs font-bold text-orange-200">DAILY STREAK</div>
+                        <div class="text-[9px] text-gray-400" id="current-streak">Current: 0 days</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs font-bold text-orange-200" id="longest-streak">Longest: 0</div>
+                    <div class="text-[9px] text-gray-400">+5 tokens/day</div>
                 </div>
             </div>
 
@@ -205,25 +316,119 @@
 
             <div id="habit-list" class="space-y-3 pb-20"></div>
             <div id="empty-habits" class="hidden text-center mt-10 opacity-50"><p class="text-xs">NO ACTIVE PROTOCOLS</p></div>
+            
+            <!-- ADSENSE: Page 1 (Habits) - Bottom Banner -->
+            <div class="ad-container mt-4">
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-placeholder">
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922901026081981"
+                         crossorigin="anonymous"></script>
+                    <!-- Banner on Page 1 (Bottom) -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7922901026081981"
+                         data-ad-slot="4979292682"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
         </div>
 
         <!-- 2. BATTLES (Bosses) -->
         <div id="view-battles" class="view-section hidden h-full p-4 overflow-y-auto custom-scroll">
+            
+            <!-- ADSENSE: Page 2 (Battles) - Top Banner -->
+            <div class="ad-container mb-4">
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-placeholder">
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922901026081981"
+                         crossorigin="anonymous"></script>
+                    <!-- Banner on Page 2 (Top) -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7922901026081981"
+                         data-ad-slot="3795855919"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+            
             <div class="flex justify-between items-end mb-4">
                 <h1 class="text-2xl font-orbitron text-red-500">BOSS RAIDS</h1>
                 <button onclick="openModal('create-boss')" class="bg-red-600 text-white w-8 h-8 rounded flex items-center justify-center hover:scale-110 transition shadow-lg"><i class="fas fa-dragon"></i></button>
+            </div>
+            
+            <!-- Boss Battle Info -->
+            <div class="glass p-3 rounded mb-4">
+                <div class="flex justify-between items-center text-xs">
+                    <div>
+                        <span class="text-blue-400"><i class="fas fa-gem"></i> Tokens: <span id="boss-token-count">0</span></span>
+                        <span class="ml-3 text-green-400"><i class="fas fa-bolt"></i> XP: <span id="boss-xp-count">0</span></span>
+                    </div>
+                    <div class="text-gray-400">
+                        Attack Cost: 1 Token + 10 XP
+                    </div>
+                </div>
             </div>
             
             <div id="boss-list" class="space-y-4 pb-20"></div>
             <div id="empty-bosses" class="hidden text-center mt-20 opacity-50">
                 <i class="fas fa-peace text-4xl mb-2"></i>
                 <p class="text-xs">SECTOR CLEAR. NO THREATS.</p>
+                <button onclick="openModal('create-boss')" class="mt-4 text-xs border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-500 hover:text-white transition">SUMMON FIRST BOSS</button>
+            </div>
+            
+            <!-- ADSENSE: Page 2 (Battles) - Bottom Banner -->
+            <div class="ad-container mt-4">
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-placeholder">
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922901026081981"
+                         crossorigin="anonymous"></script>
+                    <!-- Page 2 (Battles)Bottom Banner -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7922901026081981"
+                         data-ad-slot="3221140842"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
             </div>
         </div>
 
         <!-- 3. SHOP & INVENTORY -->
         <div id="view-shop" class="view-section hidden h-full p-4 overflow-y-auto custom-scroll">
             <h1 class="text-2xl font-orbitron mb-4 text-[var(--accent)]">BLACK MARKET</h1>
+            
+            <!-- Watch Ads for Rewards Section (Simulated + Offerwall trigger) -->
+            <div class="glass p-4 rounded mb-6">
+                <h3 class="text-xs font-bold mb-3 uppercase text-gray-400">Ad Rewards</h3>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="glass p-3 rounded flex flex-col items-center text-center">
+                        <i class="fas fa-gem text-blue-400 text-2xl mb-2"></i>
+                        <div class="text-sm font-bold">+5 Tokens</div>
+                        <div class="text-[9px] text-gray-400 mb-2">Watch an ad to earn tokens</div>
+                        <button onclick="watchAd('tokens')" class="w-full py-2 bg-blue-600 text-white text-xs rounded hover:bg-blue-500">WATCH AD</button>
+                    </div>
+                    <div class="glass p-3 rounded flex flex-col items-center text-center">
+                        <i class="fas fa-coins text-yellow-400 text-2xl mb-2"></i>
+                        <div class="text-sm font-bold">+25 Gold</div>
+                        <div class="text-[9px] text-gray-400 mb-2">Watch an ad to earn gold</div>
+                        <button onclick="watchAd('gold')" class="w-full py-2 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-500">WATCH AD</button>
+                    </div>
+                </div>
+                <div class="text-center text-xs text-gray-500 mt-2">
+                    <i class="fas fa-sync-alt mr-1"></i> Resets in: <span id="ad-reset-timer">24:00:00</span>
+                </div>
+            </div>
             
             <div class="mb-6">
                 <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-2">My Inventory</h3>
@@ -239,24 +444,75 @@
                         <i class="fas fa-flask text-red-500 text-xl"></i>
                         <div><div class="text-sm font-bold">Nano-Stimpack</div><div class="text-[9px] text-gray-400">+30 HP</div></div>
                     </div>
-                    <button onclick="buyItem('potion', 50)" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">50 G</button>
+                    <button onclick="buyItem('potion', 50, 'gold')" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">50 G</button>
                 </div>
                 <div class="glass p-3 rounded flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-snowflake text-blue-400 text-xl"></i>
                         <div><div class="text-sm font-bold">Cryo-Freeze</div><div class="text-[9px] text-gray-400">Save Streak</div></div>
                     </div>
-                    <button onclick="buyItem('freeze', 150)" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">150 G</button>
+                    <button onclick="buyItem('freeze', 150, 'gold')" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">150 G</button>
+                </div>
+                <div class="glass p-3 rounded flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-bolt text-yellow-500 text-xl"></i>
+                        <div><div class="text-sm font-bold">Energy Boost</div><div class="text-[9px] text-gray-400">+2 Daily Attacks</div></div>
+                    </div>
+                    <button onclick="buyItem('boost', 100, 'gold')" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">100 G</button>
+                </div>
+                <div class="glass p-3 rounded flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-gem text-blue-400 text-xl"></i>
+                        <div><div class="text-sm font-bold">Token Pack</div><div class="text-[9px] text-gray-400">+10 Tokens</div></div>
+                    </div>
+                    <button onclick="buyItem('tokenPack', 50, 'gold')" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">50 G</button>
                 </div>
             </div>
 
             <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-2 border-b border-gray-800 pb-1">System Themes</h3>
             <div id="theme-list" class="grid grid-cols-2 gap-3 pb-20"></div>
+            
+            <!-- ADSENSE: Page 3 (Shop) - Bottom Banner -->
+            <div class="ad-container mt-4">
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-placeholder">
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922901026081981"
+                         crossorigin="anonymous"></script>
+                    <!-- Page 3 (Shop)	Bottom Banner -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7922901026081981"
+                         data-ad-slot="5526087599"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
         </div>
 
         <!-- 4. PROFILE -->
         <div id="view-profile" class="view-section hidden h-full p-4 overflow-y-auto custom-scroll">
             <h1 class="text-2xl font-orbitron mb-4 text-[var(--primary)]">SYSTEM CORE</h1>
+            
+            <!-- Profile Picture Upload -->
+            <div class="glass p-4 rounded mb-4">
+                <h3 class="text-xs font-bold mb-3 uppercase text-gray-400">Profile Picture</h3>
+                <div class="flex items-center gap-4 mb-3">
+                    <div id="profile-pic-preview" class="w-16 h-16 rounded-full bg-gray-800 border-2 border-[var(--primary)] flex items-center justify-center overflow-hidden">
+                        <img id="profile-pic-preview-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                        <i id="profile-pic-preview-icon" class="fas fa-user text-2xl text-gray-400"></i>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-500 mb-1">Upload a profile picture</label>
+                        <label class="bg-white/5 p-2 rounded text-xs border border-white/10 hover:bg-white/10 text-center cursor-pointer block">
+                            CHOOSE IMAGE
+                            <input type="file" id="profile-pic-input" class="hidden" accept="image/*" onchange="handleProfilePicUpload(this)">
+                        </label>
+                    </div>
+                </div>
+            </div>
             
             <!-- Share Progress Card -->
             <div class="glass p-4 rounded mb-4">
@@ -268,6 +524,18 @@
             
             <div class="glass p-4 rounded mb-4">
                 <canvas id="statChart"></canvas>
+            </div>
+            
+            <!-- Weekly Progress -->
+            <div class="glass p-4 rounded mb-4">
+                <h3 class="text-xs font-bold mb-3 uppercase text-gray-400">Weekly Progress</h3>
+                <div class="grid grid-cols-7 gap-1 mb-2" id="weekly-progress-grid">
+                    <!-- JS will populate this -->
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-gray-500">Habits Completed: <span id="weekly-habits">0</span></span>
+                    <span class="text-gray-500">Bosses Defeated: <span id="weekly-bosses">0</span></span>
+                </div>
             </div>
             
             <div class="glass p-4 rounded mb-6">
@@ -287,6 +555,25 @@
                     </label>
                 </div>
             </div>
+            
+            <!-- ADSENSE: Page 4 (Profile) - Bottom Banner -->
+            <div class="ad-container mt-4">
+                <div class="ad-label">Advertisement</div>
+                <div class="ad-placeholder">
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922901026081981"
+                         crossorigin="anonymous"></script>
+                    <!-- Page 4 (Profile)	Bottom Banner -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-7922901026081981"
+                         data-ad-slot="9736795344"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -298,8 +585,8 @@
         <button onclick="switchView('profile')" class="nav-btn flex flex-col items-center gap-1 text-gray-500 w-full hover:text-[var(--primary)] transition"><i class="fas fa-id-card text-xl"></i><span class="text-[8px] font-bold tracking-widest">CORE</span></button>
     </nav>
 
-    <!-- MODALS -->
-    <!-- 1. Create Habit -->
+    <!-- MODALS & APP LOGIC -->
+    <!-- Create Habit Modal -->
     <div id="create-habit" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
         <div class="glass w-full max-w-md p-6 rounded-lg border border-white/10 relative">
             <h2 class="text-lg font-orbitron mb-4">NEW PROTOCOL</h2>
@@ -318,6 +605,15 @@
                 </select>
             </div>
 
+            <div class="mb-4">
+                <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Difficulty</label>
+                <div class="flex gap-2">
+                    <button id="difficulty-easy" class="flex-1 py-2 text-xs border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white transition active">Easy</button>
+                    <button id="difficulty-medium" class="flex-1 py-2 text-xs border border-yellow-500 text-yellow-500 rounded hover:bg-yellow-500 hover:text-white transition">Medium</button>
+                    <button id="difficulty-hard" class="flex-1 py-2 text-xs border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition">Hard</button>
+                </div>
+            </div>
+
             <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Icon & Color</label>
             <div class="flex gap-2 mb-4 overflow-x-auto" id="habit-icons"></div>
             <div class="flex gap-2 mb-6" id="habit-colors"></div>
@@ -329,7 +625,7 @@
         </div>
     </div>
 
-    <!-- 2. Edit Habit -->
+    <!-- Edit Habit Modal -->
     <div id="edit-habit" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
         <div class="glass w-full max-w-md p-6 rounded-lg border border-white/10 relative">
             <h2 class="text-lg font-orbitron mb-4">EDIT PROTOCOL</h2>
@@ -359,7 +655,7 @@
         </div>
     </div>
 
-    <!-- 3. Archive Modal -->
+    <!-- Archive Modal -->
     <div id="archive-habits" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
         <div class="glass w-full max-w-md p-6 rounded-lg border border-white/10 relative">
             <h2 class="text-lg font-orbitron mb-4">ARCHIVED PROTOCOLS</h2>
@@ -368,7 +664,7 @@
         </div>
     </div>
 
-    <!-- 4. Create Boss -->
+    <!-- Create Boss Modal -->
     <div id="create-boss" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
         <div class="glass w-full max-w-md p-6 rounded-lg border border-red-900/50 relative shadow-[0_0_30px_rgba(255,0,0,0.2)]">
             <h2 class="text-lg font-orbitron mb-4 text-red-500">SUMMON BOSS</h2>
@@ -388,7 +684,7 @@
         </div>
     </div>
 
-    <!-- 5. Focus Mode -->
+    <!-- Focus Mode Modal -->
     <div id="focus-modal" class="fixed inset-0 z-50 bg-black hidden flex flex-col items-center justify-center">
         <div class="absolute inset-0 bg-blue-900/10 animate-pulse pointer-events-none"></div>
         <div class="z-10 text-center">
@@ -412,6 +708,17 @@
         </div>
     </div>
 
+    <!-- Achievements Modal -->
+    <div id="achievements" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-6 rounded-lg border border-white/10 relative max-h-[80vh] overflow-y-auto">
+            <h2 class="text-lg font-orbitron mb-4">ACHIEVEMENTS</h2>
+            <div id="achievements-list" class="space-y-4">
+                <!-- JS will populate this -->
+            </div>
+            <button onclick="closeModal('achievements')" class="w-full py-3 mt-4 text-gray-400 bg-white/5 rounded">CLOSE</button>
+        </div>
+    </div>
+
     <!-- Share Card Preview -->
     <div id="share-card-preview" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
         <div class="glass p-6 rounded-lg border border-white/10 relative">
@@ -419,8 +726,16 @@
             <div id="share-card" class="mx-auto">
                 <div class="share-card-content">
                     <div class="share-card-title">WARRIOR MODE</div>
-                    <div class="text-lg font-bold" id="share-user-name">PLAYER</div>
-                    <div class="text-sm opacity-80 mb-4">Level <span id="share-level">1</span> Warrior</div>
+                    <div class="flex items-center justify-center gap-3 mb-3">
+                        <div id="share-profile-pic" class="w-12 h-12 rounded-full bg-gray-800 border-2 border-[var(--primary)] flex items-center justify-center overflow-hidden">
+                            <img id="share-profile-pic-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                            <i id="share-profile-pic-icon" class="fas fa-user text-xl text-gray-400"></i>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-lg font-bold" id="share-user-name">PLAYER</div>
+                            <div class="text-sm opacity-80">Level <span id="share-level">1</span> Warrior</div>
+                        </div>
+                    </div>
                     
                     <div class="share-card-stats">
                         <div class="share-card-stat">
@@ -447,8 +762,25 @@
             </div>
             <div class="flex gap-2 mt-4">
                 <button onclick="closeModal('share-card-preview')" class="flex-1 py-3 text-gray-400 bg-white/5 rounded">CLOSE</button>
-                <button onclick="downloadShareCard()" class="flex-1 py-3 bg-[var(--primary)] text-black font-bold rounded">DOWNLOAD</button>
+                <button onclick="showAdForDownload()" class="flex-1 py-3 bg-[var(--primary)] text-black font-bold rounded">DOWNLOAD</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Ad Simulation Modal -->
+    <div id="ad-modal" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
+        <div class="glass p-6 rounded-lg border border-white/10 relative">
+            <h2 class="text-lg font-orbitron mb-4">ADVERTISEMENT</h2>
+            <div class="ad-simulation">
+                <div class="ad-timer" id="ad-timer">5s</div>
+                <div class="ad-content">
+                    <i class="fas fa-ad text-4xl text-yellow-400 mb-3"></i>
+                    <h3 class="text-xl font-bold mb-2">Support Our App</h3>
+                    <p class="text-sm mb-4">Watching this ad helps us continue development</p>
+                    <div class="text-xs text-gray-400">Thank you for your support!</div>
+                </div>
+            </div>
+            <button onclick="skipAd()" class="w-full py-3 mt-4 text-gray-400 bg-white/5 rounded">SKIP AD</button>
         </div>
     </div>
 
@@ -485,26 +817,49 @@
                     osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, t); osc.frequency.linearRampToValueAtTime(50, t+0.2);
                     gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.2);
                     osc.start(t); osc.stop(t+0.2);
+                } else if (type === 'levelup') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, t); osc.frequency.exponentialRampToValueAtTime(800, t+0.5);
+                    gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.001, t+0.5);
+                    osc.start(t); osc.stop(t+0.5);
                 }
             }
         };
 
         /* --- STATE --- */
         const DEFAULT_STATE = {
-            user: { name: null, level: 1, xp: 0, hp: 100, maxHp: 100, gold: 0, lastLogin: null },
+            user: { 
+                name: null, 
+                level: 1, 
+                xp: 0, 
+                hp: 100, 
+                maxHp: 100, 
+                gold: 0, 
+                tokens: 0, 
+                lastLogin: null,
+                streak: 0,
+                longestStreak: 0,
+                dailyAttacks: 5,
+                lastAdWatch: null,
+                profilePic: null
+            },
             stats: { str: 0, int: 0, dex: 0, cha: 0 },
             habits: [],
             archivedHabits: [],
             bosses: [],
-            inventory: { potion: 0, freeze: 0 },
+            inventory: { potion: 0, freeze: 0, boost: 0, tokenPack: 0 },
             unlockedThemes: ['cyber'],
             activeTheme: 'cyber',
-            currentMood: null
+            currentMood: null,
+            achievements: [],
+            weeklyProgress: {}
         };
         
         let App = JSON.parse(localStorage.getItem('WARRIOR_V4')) || DEFAULT_STATE;
         let focusInterval;
         let editingHabitId = null;
+        let selectedDifficulty = 'easy';
+        let adResetInterval;
+        let adTimerInterval;
 
         /* --- CORE --- */
         function init() {
@@ -513,8 +868,11 @@
                 applyTheme(App.activeTheme);
                 if (App.currentMood) setMood(App.currentMood, false);
                 checkDailyReset();
+                checkAdReset();
                 renderAll();
                 startParticles();
+                startAdResetTimer();
+                loadProfilePic();
             }
         }
 
@@ -546,10 +904,84 @@
                         const dmg = missed.length * 10;
                         takeDamage(dmg);
                         alert(`⚠️ MISSED PROTOCOLS DETECTED. -${dmg} HP`);
+                        App.user.streak = 0;
                     }
+                } else {
+                    // User completed all habits yesterday
+                    App.user.streak++;
+                    if (App.user.streak > App.user.longestStreak) {
+                        App.user.longestStreak = App.user.streak;
+                    }
+                    // Award tokens for maintaining streak
+                    App.user.tokens += 5;
                 }
+                
+                // Reset daily attacks
+                App.user.dailyAttacks = 5 + (App.inventory.boost > 0 ? 2 : 0);
+                
                 App.user.lastLogin = today;
                 save();
+            }
+        }
+
+        function checkAdReset() {
+            const now = new Date();
+            const lastAdWatch = App.user.lastAdWatch ? new Date(App.user.lastAdWatch) : null;
+            
+            // Reset ad watches if it's a new day
+            if (!lastAdWatch || lastAdWatch.toDateString() !== now.toDateString()) {
+                App.user.lastAdWatch = now.toISOString();
+                save();
+            }
+        }
+
+        function startAdResetTimer() {
+            // Update the ad reset timer every second
+            adResetInterval = setInterval(() => {
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                
+                const diff = tomorrow - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('ad-reset-timer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        /* --- PROFILE PICTURE --- */
+        function handleProfilePicUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    App.user.profilePic = e.target.result;
+                    save();
+                    loadProfilePic();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function loadProfilePic() {
+            if (App.user.profilePic) {
+                document.getElementById('profile-pic').src = App.user.profilePic;
+                document.getElementById('profile-pic').classList.remove('hidden');
+                document.getElementById('profile-default-icon').classList.add('hidden');
+                
+                document.getElementById('profile-pic-preview-img').src = App.user.profilePic;
+                document.getElementById('profile-pic-preview-img').classList.remove('hidden');
+                document.getElementById('profile-pic-preview-icon').classList.add('hidden');
+            } else {
+                document.getElementById('profile-pic').classList.add('hidden');
+                document.getElementById('profile-default-icon').classList.remove('hidden');
+                
+                document.getElementById('profile-pic-preview-img').classList.add('hidden');
+                document.getElementById('profile-pic-preview-icon').classList.remove('hidden');
             }
         }
 
@@ -564,6 +996,8 @@
             renderBosses();
             renderInventory();
             renderShop();
+            renderAchievements();
+            renderWeeklyProgress();
             updateChart();
             updateHUD();
         }
@@ -594,7 +1028,7 @@
                             <h3 class="font-bold text-white text-sm">${h.title}</h3>
                             ${!isBad ? `<span class="text-[9px] font-mono text-orange-500"><i class="fas fa-fire"></i> ${streak}</span>` : ''}
                         </div>
-                        <div class="text-[9px] uppercase text-gray-500 font-bold">${h.attr} | ${isBad ? 'BREAK' : 'BUILD'}</div>
+                        <div class="text-[9px] uppercase text-gray-500 font-bold">${h.attr} | ${isBad ? 'BREAK' : 'BUILD'} | ${h.difficulty || 'Easy'}</div>
                     </div>
                     <div class="flex gap-1">
                         <button onclick="${isBad ? `doBadHabit('${h.id}')` : `completeHabit('${h.id}')`}" 
@@ -608,41 +1042,10 @@
                 `;
                 list.appendChild(el);
             });
-        }
-
-        function renderArchivedHabits() {
-            const list = document.getElementById('archived-habits-list');
-            list.innerHTML = '';
             
-            if(App.archivedHabits.length === 0) {
-                list.innerHTML = '<p class="text-center text-gray-500 text-xs py-4">No archived protocols</p>';
-                return;
-            }
-
-            App.archivedHabits.forEach(h => {
-                const streak = calculateStreak(h);
-                const el = document.createElement('div');
-                const isBad = h.type === 'bad';
-                
-                el.className = `habit-card glass p-3 rounded flex items-center gap-3 mb-2`;
-                el.style.setProperty('--h-color', h.color);
-                
-                el.innerHTML = `
-                    <div class="w-8 h-8 rounded bg-black/30 flex items-center justify-center text-lg">${h.icon}</div>
-                    <div class="flex-1">
-                        <div class="flex justify-between">
-                            <h3 class="font-bold text-white text-sm">${h.title}</h3>
-                            ${!isBad ? `<span class="text-[9px] font-mono text-orange-500">${streak}</span>` : ''}
-                        </div>
-                        <div class="text-[9px] uppercase text-gray-500 font-bold">${h.attr} | ${isBad ? 'BREAK' : 'BUILD'}</div>
-                    </div>
-                    <div class="flex gap-1">
-                        <button onclick="unarchiveHabit('${h.id}')" class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition text-green-400"><i class="fas fa-undo text-xs"></i></button>
-                        <button onclick="deleteHabit('${h.id}', true)" class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition text-red-400"><i class="fas fa-trash text-xs"></i></button>
-                    </div>
-                `;
-                list.appendChild(el);
-            });
+            // Update streak display
+            document.getElementById('current-streak').textContent = `Current: ${App.user.streak} days`;
+            document.getElementById('longest-streak').textContent = `Longest: ${App.user.longestStreak}`;
         }
 
         function completeHabit(id) {
@@ -650,8 +1053,25 @@
             const today = new Date().toISOString().split('T')[0];
             if(!h.history.includes(today)) {
                 h.history.push(today);
-                gainRewards(15, 10, h.attr);
+                
+                // Calculate rewards based on difficulty
+                let xpReward = 15;
+                let goldReward = 10;
+                let tokenReward = 1;
+                
+                if (h.difficulty === 'medium') {
+                    xpReward = 25;
+                    goldReward = 15;
+                    tokenReward = 2;
+                } else if (h.difficulty === 'hard') {
+                    xpReward = 40;
+                    goldReward = 25;
+                    tokenReward = 3;
+                }
+                
+                gainRewards(xpReward, goldReward, h.attr, tokenReward);
                 confetti();
+                checkAchievements();
                 save();
                 renderHabits();
             }
@@ -680,6 +1100,7 @@
                 type: document.getElementById('habit-type').value,
                 icon: selectedIcon,
                 color: selectedColor,
+                difficulty: selectedDifficulty,
                 history: []
             });
             closeModal('create-habit');
@@ -687,88 +1108,28 @@
             renderHabits();
         }
 
-        function editHabit(id) {
-            const h = App.habits.find(x => x.id === id);
-            if(!h) return;
-            
-            editingHabitId = id;
-            document.getElementById('edit-habit-title').value = h.title;
-            document.getElementById('edit-habit-attr').value = h.attr;
-            document.getElementById('edit-habit-type').value = h.type;
-            
-            // Set selected icon and color
-            selectedIcon = h.icon;
-            selectedColor = h.color;
-            
-            setupHabitEditor();
-            openModal('edit-habit');
-        }
-
-        function updateHabit() {
-            if(!editingHabitId) return;
-            
-            const h = App.habits.find(x => x.id === editingHabitId);
-            if(!h) return;
-            
-            h.title = document.getElementById('edit-habit-title').value;
-            h.attr = document.getElementById('edit-habit-attr').value;
-            h.type = document.getElementById('edit-habit-type').value;
-            h.icon = selectedIcon;
-            h.color = selectedColor;
-            
-            closeModal('edit-habit');
-            save();
-            renderHabits();
-            editingHabitId = null;
-        }
-
-        function archiveHabit(id) {
-            if(confirm("Archive this protocol?")) {
-                const h = App.habits.find(x => x.id === id);
-                if(h) {
-                    App.habits = App.habits.filter(x => x.id !== id);
-                    App.archivedHabits.push(h);
-                    save();
-                    renderHabits();
-                }
-            }
-        }
-
-        function unarchiveHabit(id) {
-            const h = App.archivedHabits.find(x => x.id === id);
-            if(h) {
-                App.archivedHabits = App.archivedHabits.filter(x => x.id !== id);
-                App.habits.push(h);
-                save();
-                renderHabits();
-                renderArchivedHabits();
-            }
-        }
-
-        function deleteHabit(id, fromArchive = false) {
-            if(confirm("Permanently delete this protocol?")) {
-                if(fromArchive) {
-                    App.archivedHabits = App.archivedHabits.filter(h => h.id !== id);
-                    renderArchivedHabits();
-                } else {
-                    App.habits = App.habits.filter(h => h.id !== id);
-                    renderHabits();
-                }
-                save();
-            }
-        }
-
         /* --- BOSSES --- */
         function renderBosses() {
             const list = document.getElementById('boss-list');
             list.innerHTML = '';
-            if(App.bosses.length === 0) document.getElementById('empty-bosses').classList.remove('hidden');
-            else document.getElementById('empty-bosses').classList.add('hidden');
+            
+            // Update boss battle info
+            document.getElementById('boss-token-count').textContent = App.user.tokens;
+            document.getElementById('boss-xp-count').textContent = App.user.xp;
+            
+            if(App.bosses.length === 0) {
+                document.getElementById('empty-bosses').classList.remove('hidden');
+                document.getElementById('boss-list').classList.add('hidden');
+            } else {
+                document.getElementById('empty-bosses').classList.add('hidden');
+                document.getElementById('boss-list').classList.remove('hidden');
+            }
 
             App.bosses.forEach(b => {
                 const hpPct = (b.hp / b.maxHp) * 100;
+                const canAttack = canAttackBoss();
                 const el = document.createElement('div');
-                el.className = 'glass p-4 rounded border border-red-900/30 relative overflow-hidden group';
+                el.className = 'glass p-4 rounded border border-red-900/30 relative overflow-hidden';
                 el.innerHTML = `
                     <div class="flex justify-between items-center mb-2 relative z-10">
                         <span class="font-orbitron text-red-400 font-bold">${b.title}</span>
@@ -777,13 +1138,21 @@
                     <div class="w-full h-3 bg-black rounded-full overflow-hidden relative z-10 border border-red-900/50">
                         <div class="h-full bg-red-600 transition-all" style="width: ${hpPct}%"></div>
                     </div>
-                    <button onclick="attackBoss(${b.id})" class="absolute inset-0 z-20 bg-red-900/0 hover:bg-red-900/20 transition flex items-center justify-center opacity-0 group-hover:opacity-100 font-bold tracking-widest text-red-100">
-                        ATTACK
+                    <div class="mt-2 text-xs text-gray-400">
+                        <div>Attack Cost: 1 Token & 10 XP</div>
+                        <div>Reward: ${Math.floor(b.maxHp * 20 * b.diff)} XP & ${Math.floor(b.maxHp * 10 * b.diff)} Gold</div>
+                    </div>
+                    <button onclick="attackBoss(${b.id})" class="mt-2 w-full py-2 ${canAttack ? 'bg-red-600 hover:bg-red-500' : 'bg-gray-700 cursor-not-allowed'} text-white rounded transition flex items-center justify-center gap-2" ${canAttack ? '' : 'disabled'}>
+                        <i class="fas fa-fist-raised"></i> ${canAttack ? 'ATTACK (1 Token + 10 XP)' : 'NEED 1 TOKEN + 10 XP'}
                     </button>
                     <button onclick="deleteBoss(${b.id})" class="absolute top-2 right-2 z-30 text-xs text-red-900 hover:text-red-500"><i class="fas fa-times"></i></button>
                 `;
                 list.appendChild(el);
             });
+        }
+
+        function canAttackBoss() {
+            return App.user.tokens >= 1 && App.user.xp >= 10 && App.user.dailyAttacks > 0;
         }
 
         function saveBoss() {
@@ -798,21 +1167,40 @@
         }
 
         function attackBoss(id) {
+            if (!canAttackBoss()) {
+                if (App.user.tokens < 1) {
+                    alert("You need at least 1 Token to attack a boss! Complete habits or watch ads to earn tokens.");
+                } else if (App.user.xp < 10) {
+                    alert("You need at least 10 XP to attack a boss! Complete habits to earn XP.");
+                } else if (App.user.dailyAttacks <= 0) {
+                    alert("You've used all your daily attacks! Use an Energy Boost or wait until tomorrow.");
+                }
+                return;
+            }
+            
             const b = App.bosses.find(x => x.id === id);
             b.hp--;
-            SFX.play('damage'); // Reusing damage sound for impact
+            
+            // Deduct attack cost
+            App.user.tokens -= 1;
+            App.user.xp -= 10;
+            App.user.dailyAttacks--;
+            
+            SFX.play('damage');
             document.body.classList.add('anim-shake');
             setTimeout(() => document.body.classList.remove('anim-shake'), 400);
 
             if(b.hp <= 0) {
                 const xp = b.maxHp * 20 * b.diff;
                 const gold = b.maxHp * 10 * b.diff;
-                gainRewards(xp, gold, 'str');
+                gainRewards(xp, gold, 'str', 0);
                 App.bosses = App.bosses.filter(x => x.id !== id);
                 alert(`BOSS ELIMINATED! +${xp} XP | +${gold} GOLD`);
+                checkAchievements();
             }
             save();
             renderBosses();
+            updateHUD();
         }
 
         /* --- SHOP & INVENTORY --- */
@@ -832,6 +1220,8 @@
             inv.innerHTML = '';
             if(App.inventory.potion > 0) inv.innerHTML += `<div onclick="useItem('potion')" class="glass px-3 py-1 rounded text-xs cursor-pointer border border-red-900/50 hover:bg-red-900/20">❤️ Potion x${App.inventory.potion}</div>`;
             if(App.inventory.freeze > 0) inv.innerHTML += `<div class="glass px-3 py-1 rounded text-xs cursor-pointer border border-blue-900/50">❄️ Freeze x${App.inventory.freeze}</div>`;
+            if(App.inventory.boost > 0) inv.innerHTML += `<div class="glass px-3 py-1 rounded text-xs cursor-pointer border border-yellow-900/50">⚡ Boost x${App.inventory.boost}</div>`;
+            if(App.inventory.tokenPack > 0) inv.innerHTML += `<div onclick="useItem('tokenPack')" class="glass px-3 py-1 rounded text-xs cursor-pointer border border-blue-900/50">💎 Token Pack x${App.inventory.tokenPack}</div>`;
             if(inv.innerHTML === '') inv.innerHTML = '<span class="text-xs text-gray-600">Empty</span>';
         }
 
@@ -879,64 +1269,98 @@
                 SFX.play('xp');
                 save();
                 renderAll();
+            } else if (type === 'boost' && App.inventory.boost > 0) {
+                App.inventory.boost--;
+                App.user.dailyAttacks += 2;
+                alert("Energy Boost activated! +2 daily attacks.");
+                save();
+                renderAll();
+            } else if (type === 'tokenPack' && App.inventory.tokenPack > 0) {
+                App.inventory.tokenPack--;
+                App.user.tokens += 10;
+                alert("Token Pack opened! +10 tokens.");
+                save();
+                renderAll();
             }
         }
 
-        function buyItem(type, cost) {
-            if(App.user.gold >= cost) {
+        function buyItem(type, cost, currency) {
+            if(currency === 'gold' && App.user.gold >= cost) {
                 App.user.gold -= cost;
                 App.inventory[type]++;
                 SFX.play('xp');
                 save();
                 renderAll();
-            } else alert("Insufficient Gold");
-        }
-
-        /* --- MOOD SYSTEM --- */
-        function setMood(mood, saveToState = true) {
-            if (!mood) return;
-            
-            // Remove any existing mood classes
-            document.body.classList.remove('mood-happy', 'mood-calm', 'mood-focused', 'mood-energetic', 'mood-relaxed');
-            
-            // Add the selected mood class
-            document.body.classList.add(`mood-${mood}`);
-            
-            // Update the selector
-            document.getElementById('mood-selector').value = mood;
-            
-            if (saveToState) {
-                App.currentMood = mood;
+            } else if (currency === 'tokens' && App.user.tokens >= cost) {
+                App.user.tokens -= cost;
+                App.inventory[type]++;
+                SFX.play('xp');
                 save();
+                renderAll();
+            } else {
+                alert(`Insufficient ${currency === 'gold' ? 'Gold' : 'Tokens'}`);
             }
         }
 
-        /* --- FOCUS TIMER --- */
-        function startFocus(min) {
-            document.getElementById('focus-setup').classList.add('hidden');
-            document.getElementById('focus-active').classList.remove('hidden');
-            let sec = min * 60;
-            const display = document.getElementById('timer-display');
+        /* --- AD SYSTEM (REWARDS) --- */
+        function watchAd(rewardType) {
+            // Note: AdSense Offerwall/Auto-Ads handle real ads automatically. 
+            // This function handles the "Reward" simulation for the game logic.
             
-            focusInterval = setInterval(() => {
-                sec--;
-                const m = Math.floor(sec / 60);
-                const s = sec % 60;
-                display.innerText = `${m}:${s<10?'0'+s:s}`;
-                if(sec <= 0) {
-                    clearInterval(focusInterval);
-                    gainRewards(min*5, min*2, 'int');
-                    alert("NEURAL LINK COMPLETE. DATA UPLOADED.");
-                    stopFocus();
+            const today = new Date().toDateString();
+            const lastAdWatch = App.user.lastAdWatch ? new Date(App.user.lastAdWatch).toDateString() : null;
+            
+            if (lastAdWatch === today) {
+                alert("You've already claimed your ad rewards today. Come back tomorrow!");
+                return;
+            }
+            
+            // Simulate watching an ad (The real Offerwall may appear as an overlay from Google)
+            showAdModal(() => {
+                // Reward user after watching ad
+                if (rewardType === 'tokens') {
+                    App.user.tokens += 5;
+                    alert("+5 Tokens earned!");
+                } else if (rewardType === 'gold') {
+                    App.user.gold += 25;
+                    alert("+25 Gold earned!");
+                }
+                
+                // Update last ad watch time
+                App.user.lastAdWatch = new Date().toISOString();
+                
+                save();
+                updateHUD();
+            });
+        }
+
+        function showAdForDownload() {
+            showAdModal(() => {
+                // Download the share card after ad
+                downloadShareCard();
+            });
+        }
+
+        function showAdModal(callback) {
+            openModal('ad-modal');
+            let timeLeft = 5;
+            const timerElement = document.getElementById('ad-timer');
+            
+            adTimerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(adTimerInterval);
+                    closeModal('ad-modal');
+                    if (callback) callback();
                 }
             }, 1000);
         }
 
-        function stopFocus() {
-            clearInterval(focusInterval);
-            document.getElementById('focus-setup').classList.remove('hidden');
-            document.getElementById('focus-active').classList.add('hidden');
-            closeModal('focus-modal');
+        function skipAd() {
+            clearInterval(adTimerInterval);
+            closeModal('ad-modal');
         }
 
         /* --- SHARE FUNCTIONALITY --- */
@@ -945,10 +1369,20 @@
             document.getElementById('share-user-name').textContent = App.user.name || 'PLAYER';
             document.getElementById('share-level').textContent = App.user.level;
             document.getElementById('share-habits-count').textContent = App.habits.length;
-            document.getElementById('share-streak').textContent = calculateLongestStreak();
+            document.getElementById('share-streak').textContent = App.user.longestStreak;
             document.getElementById('share-gold').textContent = App.user.gold;
             document.getElementById('share-bosses').textContent = App.bosses.length;
             document.getElementById('share-date').textContent = new Date().toLocaleDateString();
+            
+            // Update profile picture in share card
+            if (App.user.profilePic) {
+                document.getElementById('share-profile-pic-img').src = App.user.profilePic;
+                document.getElementById('share-profile-pic-img').classList.remove('hidden');
+                document.getElementById('share-profile-pic-icon').classList.add('hidden');
+            } else {
+                document.getElementById('share-profile-pic-img').classList.add('hidden');
+                document.getElementById('share-profile-pic-icon').classList.remove('hidden');
+            }
             
             // Set a motivational quote based on level
             const quotes = [
@@ -970,92 +1404,15 @@
                 link.download = `warrior-progress-${new Date().toISOString().split('T')[0]}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
+                closeModal('share-card-preview');
             });
         }
 
-        /* --- IMPORT/EXPORT --- */
-        function exportData(format) {
-            if (format === 'json') {
-                const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(App));
-                const a = document.createElement('a'); 
-                a.href = d; 
-                a.download = 'warrior_save.json'; 
-                a.click();
-            } else if (format === 'csv') {
-                // Create CSV content for habits
-                let csvContent = "id,title,attr,type,icon,color,history\n";
-                
-                App.habits.forEach(h => {
-                    const historyStr = h.history.join(';');
-                    csvContent += `${h.id},${h.title},${h.attr},${h.type},${h.icon},${h.color},"${historyStr}"\n`;
-                });
-                
-                const d = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
-                const a = document.createElement('a'); 
-                a.href = d; 
-                a.download = 'warrior_habits.csv'; 
-                a.click();
-            }
-        }
-
-        function importData(input, format) {
-            const f = input.files[0];
-            const r = new FileReader();
-            
-            r.onload = (e) => { 
-                try { 
-                    if (format === 'json') {
-                        App = JSON.parse(e.target.result); 
-                        save(); 
-                        location.reload(); 
-                    } else if (format === 'csv') {
-                        // Parse CSV and import habits
-                        const text = e.target.result;
-                        const lines = text.split('\n');
-                        const headers = lines[0].split(',');
-                        
-                        // Clear existing habits
-                        App.habits = [];
-                        
-                        for (let i = 1; i < lines.length; i++) {
-                            if (!lines[i].trim()) continue;
-                            
-                            const values = lines[i].split(',');
-                            const habit = {};
-                            
-                            headers.forEach((header, index) => {
-                                let value = values[index];
-                                // Remove quotes if present
-                                if (value.startsWith('"') && value.endsWith('"')) {
-                                    value = value.substring(1, value.length - 1);
-                                }
-                                habit[header] = value;
-                            });
-                            
-                            // Convert history string back to array
-                            if (habit.history) {
-                                habit.history = habit.history.split(';');
-                            } else {
-                                habit.history = [];
-                            }
-                            
-                            App.habits.push(habit);
-                        }
-                        
-                        save();
-                        location.reload();
-                    }
-                } catch(x) { 
-                    alert("Corrupt Data"); 
-                } 
-            };
-            r.readAsText(f);
-        }
-
         /* --- HELPERS --- */
-        function gainRewards(xp, gold, attr) {
+        function gainRewards(xp, gold, attr, tokens = 0) {
             App.user.xp += xp;
             App.user.gold += gold;
+            App.user.tokens += tokens;
             if(attr) App.stats[attr]++;
             
             // Level Up
@@ -1064,7 +1421,7 @@
                 App.user.xp = 0;
                 App.user.maxHp += 10;
                 App.user.hp = App.user.maxHp;
-                SFX.play('xp');
+                SFX.play('levelup');
                 alert("LEVEL UP! SYSTEM UPGRADED.");
             } else {
                 SFX.play('xp');
@@ -1084,33 +1441,360 @@
             document.getElementById('hud-name').innerText = App.user.name || 'GHOST';
             document.getElementById('hud-lvl').innerText = App.user.level;
             document.getElementById('hud-gold').innerText = App.user.gold;
+            document.getElementById('hud-tokens').innerText = App.user.tokens;
             document.getElementById('hud-hp').innerText = Math.ceil(App.user.hp);
             document.getElementById('hud-xp-bar').style.width = `${(App.user.xp / (App.user.level*100))*100}%`;
             document.getElementById('hud-hp-bar').style.width = `${(App.user.hp / App.user.maxHp)*100}%`;
             
             ['str','int','dex','cha'].forEach(k => document.getElementById(`stat-${k}`).innerText = App.stats[k]);
         }
-
-        function calculateStreak(h) {
+        
+        function calculateStreak(habit) {
+            if (habit.history.length === 0) return 0;
+            const sorted = [...habit.history].sort().reverse();
             let streak = 0;
-            const ms = 86400000;
-            const today = new Date().setHours(0,0,0,0);
-            for(let i=0; i<365; i++) {
-                const d = new Date(today - (i*ms)).toISOString().split('T')[0];
-                if(h.history.includes(d)) streak++;
-                else if(i===0) continue;
-                else break;
+            let current = new Date();
+            
+            const today = current.toISOString().split('T')[0];
+            if (sorted[0] === today) streak++;
+            else current.setDate(current.getDate() - 1);
+            
+            while (true) {
+                const dateStr = current.toISOString().split('T')[0];
+                if (habit.history.includes(dateStr)) {
+                    if (dateStr !== today || streak === 0) streak++;
+                    current.setDate(current.getDate() - 1);
+                } else {
+                    break;
+                }
             }
             return streak;
         }
-
-        function calculateLongestStreak() {
-            let longest = 0;
-            App.habits.forEach(h => {
-                const streak = calculateStreak(h);
-                if (streak > longest) longest = streak;
+        
+        function deleteHabit(id) {
+            if(confirm('Delete this protocol?')) {
+                App.habits = App.habits.filter(h => h.id !== id);
+                save();
+                renderHabits();
+            }
+        }
+        
+        function editHabit(id) {
+            editingHabitId = id;
+            const h = App.habits.find(x => x.id === id);
+            document.getElementById('edit-habit-title').value = h.title;
+            document.getElementById('edit-habit-attr').value = h.attr;
+            document.getElementById('edit-habit-type').value = h.type;
+            selectedIcon = h.icon;
+            selectedColor = h.color;
+            
+            const icons = document.getElementById('edit-habit-icons');
+            icons.innerHTML = '';
+            ICONS.forEach(i => {
+                const b = document.createElement('div');
+                b.className = `p-2 text-xl cursor-pointer rounded hover:bg-white/10 ${i===selectedIcon?'bg-white/20':''}`;
+                b.innerText = i;
+                b.onclick = () => { selectedIcon = i; 
+                    Array.from(icons.children).forEach(c => c.classList.remove('bg-white/20'));
+                    b.classList.add('bg-white/20');
+                };
+                icons.appendChild(b);
             });
-            return longest;
+            
+            const colors = document.getElementById('edit-habit-colors');
+            colors.innerHTML = '';
+            COLORS.forEach(c => {
+                const b = document.createElement('div');
+                b.className = `w-6 h-6 rounded-full cursor-pointer border-2 ${c===selectedColor?'border-white':'border-transparent'}`;
+                b.style.backgroundColor = c;
+                b.onclick = () => { selectedColor = c; 
+                    Array.from(colors.children).forEach(c => c.classList.remove('border-white'));
+                    c.classList.add('border-white');
+                    b.classList.add('border-white');
+                };
+                colors.appendChild(b);
+            });
+            
+            openModal('edit-habit');
+        }
+        
+        function updateHabit() {
+            if (!editingHabitId) return;
+            const h = App.habits.find(x => x.id === editingHabitId);
+            if (h) {
+                h.title = document.getElementById('edit-habit-title').value;
+                h.attr = document.getElementById('edit-habit-attr').value;
+                h.type = document.getElementById('edit-habit-type').value;
+                h.icon = selectedIcon;
+                h.color = selectedColor;
+                save();
+                renderHabits();
+            }
+            closeModal('edit-habit');
+        }
+        
+        function archiveHabit(id) {
+            const h = App.habits.find(x => x.id === id);
+            if (h) {
+                App.archivedHabits.push(h);
+                App.habits = App.habits.filter(x => x.id !== id);
+                save();
+                renderHabits();
+                renderArchivedHabits();
+            }
+        }
+        
+        function renderArchivedHabits() {
+            const list = document.getElementById('archived-habits-list');
+            list.innerHTML = '';
+            if (App.archivedHabits.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-500 text-xs">No archived protocols</div>';
+                return;
+            }
+            
+            App.archivedHabits.forEach(h => {
+                const el = document.createElement('div');
+                el.className = 'glass p-3 rounded mb-2 flex justify-between items-center';
+                el.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="text-xl">${h.icon}</div>
+                        <div class="text-sm font-bold">${h.title}</div>
+                    </div>
+                    <button onclick="restoreHabit('${h.id}')" class="text-xs text-green-400 border border-green-400 px-2 py-1 rounded hover:bg-green-400 hover:text-black">RESTORE</button>
+                `;
+                list.appendChild(el);
+            });
+        }
+        
+        function restoreHabit(id) {
+            const h = App.archivedHabits.find(x => x.id === id);
+            if (h) {
+                App.habits.push(h);
+                App.archivedHabits = App.archivedHabits.filter(x => x.id !== id);
+                save();
+                renderHabits();
+                renderArchivedHabits();
+                closeModal('archive-habits');
+            }
+        }
+        
+        function deleteBoss(id) {
+            if(confirm('Dismiss this threat?')) {
+                App.bosses = App.bosses.filter(b => b.id !== id);
+                save();
+                renderBosses();
+            }
+        }
+        
+        function startFocus(minutes) {
+            closeModal('focus-modal');
+            const endTime = Date.now() + (minutes * 60000);
+            document.getElementById('focus-setup').classList.add('hidden');
+            document.getElementById('focus-active').classList.remove('hidden');
+            openModal('focus-modal');
+            
+            clearInterval(focusInterval);
+            focusInterval = setInterval(() => {
+                const left = endTime - Date.now();
+                if (left <= 0) {
+                    clearInterval(focusInterval);
+                    document.getElementById('focus-setup').classList.remove('hidden');
+                    document.getElementById('focus-active').classList.add('hidden');
+                    closeModal('focus-modal');
+                    const earnedGold = minutes * 2;
+                    const earnedXP = minutes * 5;
+                    gainRewards(earnedXP, earnedGold, 'int', 0);
+                    alert(`FOCUS SESSION COMPLETE! +${earnedXP} XP | +${earnedGold} GOLD`);
+                } else {
+                    const m = Math.floor(left/60000);
+                    const s = Math.floor((left%60000)/1000);
+                    document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
+                }
+            }, 1000);
+        }
+        
+        function stopFocus() {
+            if(confirm("Break Neural Link? Progress will be lost.")) {
+                clearInterval(focusInterval);
+                document.getElementById('focus-setup').classList.remove('hidden');
+                document.getElementById('focus-active').classList.add('hidden');
+            }
+        }
+        
+        function checkAchievements() {
+            const achievements = [
+                { id: 'first_blood', title: 'First Blood', desc: 'Complete your first habit', check: () => App.habits.some(h => h.history.length > 0) },
+                { id: 'novice_warrior', title: 'Novice Warrior', desc: 'Reach Level 5', check: () => App.user.level >= 5 },
+                { id: 'rich', title: 'Mercenary', desc: 'Amass 500 Gold', check: () => App.user.gold >= 500 },
+                { id: 'dedicated', title: 'Dedicated', desc: 'Reach a 7-day streak', check: () => App.user.streak >= 7 },
+                { id: 'slayer', title: 'Boss Slayer', desc: 'Defeat a boss', check: () => true }
+            ];
+            
+            achievements.forEach(a => {
+                if (!App.achievements.includes(a.id) && a.check()) {
+                    App.achievements.push(a.id);
+                    alert(`🏆 ACHIEVEMENT UNLOCKED: ${a.title}`);
+                }
+            });
+        }
+        
+        function renderAchievements() {
+            const list = document.getElementById('achievements-list');
+            list.innerHTML = '';
+            
+            const allAchievements = [
+                { id: 'first_blood', title: 'First Blood', desc: 'Complete your first habit' },
+                { id: 'novice_warrior', title: 'Novice Warrior', desc: 'Reach Level 5' },
+                { id: 'rich', title: 'Mercenary', desc: 'Amass 500 Gold' },
+                { id: 'dedicated', title: 'Dedicated', desc: 'Reach a 7-day streak' },
+                { id: 'slayer', title: 'Boss Slayer', desc: 'Defeat a boss' }
+            ];
+            
+            allAchievements.forEach(a => {
+                const unlocked = App.achievements.includes(a.id);
+                list.innerHTML += `
+                    <div class="glass p-3 rounded flex items-center gap-3 ${unlocked ? 'border-yellow-500' : 'opacity-50 grayscale'}">
+                        <div class="text-2xl">${unlocked ? '🏆' : '🔒'}</div>
+                        <div>
+                            <div class="font-bold text-sm ${unlocked ? 'text-yellow-500' : 'text-gray-400'}">${a.title}</div>
+                            <div class="text-xs text-gray-500">${a.desc}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        function updateChart() {
+            const ctx = document.getElementById('statChart');
+            if (!ctx) return;
+            
+            if (window.myChart) window.myChart.destroy();
+            
+            window.myChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['STR', 'INT', 'DEX', 'CHA'],
+                    datasets: [{
+                        label: 'Stats',
+                        data: [App.stats.str, App.stats.int, App.stats.dex, App.stats.cha],
+                        backgroundColor: 'rgba(255, 0, 60, 0.2)',
+                        borderColor: '#FF003C',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#FEE801'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.1)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: 'white', font: { family: 'Orbitron' } },
+                            ticks: { display: false, backdropColor: 'transparent' },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        function renderWeeklyProgress() {
+            const grid = document.getElementById('weekly-progress-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            const today = new Date();
+            const dayOfWeek = today.getDay(); 
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - dayOfWeek);
+            
+            let habitsCount = 0;
+            
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(startOfWeek);
+                d.setDate(startOfWeek.getDate() + i);
+                const dateStr = d.toISOString().split('T')[0];
+                const isToday = dateStr === today.toISOString().split('T')[0];
+                
+                let completed = 0;
+                App.habits.forEach(h => {
+                    if (h.history.includes(dateStr)) completed++;
+                });
+                
+                if (dateStr <= today.toISOString().split('T')[0]) {
+                    habitsCount += completed;
+                }
+                
+                const intensity = Math.min(completed * 20, 100); 
+                const color = intensity > 0 ? `rgba(255, 0, 60, ${intensity/100})` : 'rgba(255, 255, 255, 0.05)';
+                
+                const el = document.createElement('div');
+                el.className = `h-8 rounded flex items-center justify-center text-[8px] ${isToday ? 'border border-white' : ''}`;
+                el.style.backgroundColor = color;
+                el.innerText = ['S','M','T','W','T','F','S'][i];
+                grid.appendChild(el);
+            }
+            
+            document.getElementById('weekly-habits').innerText = habitsCount;
+        }
+        
+        function exportData(format) {
+            let dataStr, mime;
+            if (format === 'json') {
+                dataStr = JSON.stringify(App, null, 2);
+                mime = 'application/json';
+            } else {
+                dataStr = "Habit,Attribute,Type,Difficulty,History\n";
+                App.habits.forEach(h => {
+                    dataStr += `${h.title},${h.attr},${h.type},${h.difficulty},"${h.history.join('|')}"\n`;
+                });
+                mime = 'text/csv';
+            }
+            
+            const blob = new Blob([dataStr], { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `warrior_data.${format}`;
+            a.click();
+        }
+        
+        function importData(input, format) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    if (format === 'json') {
+                        const data = JSON.parse(e.target.result);
+                        if (data.user && data.habits) {
+                            App = data;
+                            save();
+                            init();
+                            alert("System Data Restored.");
+                        } else {
+                            alert("Invalid Data File.");
+                        }
+                    } else {
+                        alert("CSV Import not fully supported in this version.");
+                    }
+                } catch (err) {
+                    alert("Error reading file.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function setMood(mood, savePref = true) {
+            if (!mood) return;
+            document.body.className = document.body.className.replace(/mood-\w+/g, '').trim();
+            document.body.classList.add(`mood-${mood}`);
+            if (savePref) {
+                App.currentMood = mood;
+                save();
+            }
         }
 
         /* --- UI UTILS --- */
@@ -1131,13 +1815,19 @@
 
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
-            if(id === 'create-habit') setupHabitCreator();
-            if(id === 'archive-habits') renderArchivedHabits();
+            if(id === 'create-habit') {
+                setupHabitCreator();
+                setupDifficultyButtons();
+            }
+            if (id === 'archive-habits') {
+                renderArchivedHabits();
+            }
         }
         
         function closeModal(id) { 
             document.getElementById(id).classList.add('hidden'); 
             if (id === 'edit-habit') editingHabitId = null;
+            if (id === 'ad-modal') clearInterval(adTimerInterval);
         }
 
         function setupHabitCreator() {
@@ -1161,51 +1851,31 @@
             });
         }
 
-        function setupHabitEditor() {
-            const icons = document.getElementById('edit-habit-icons');
-            icons.innerHTML = '';
-            ICONS.forEach(i => {
-                const b = document.createElement('div');
-                b.className = `p-2 text-xl cursor-pointer rounded hover:bg-white/10 ${i===selectedIcon?'bg-white/20':''}`;
-                b.innerText = i;
-                b.onclick = () => { selectedIcon = i; setupHabitEditor(); };
-                icons.appendChild(b);
-            });
-            const colors = document.getElementById('edit-habit-colors');
-            colors.innerHTML = '';
-            COLORS.forEach(c => {
-                const b = document.createElement('div');
-                b.className = `w-6 h-6 rounded-full cursor-pointer border-2 ${c===selectedColor?'border-white':'border-transparent'}`;
-                b.style.backgroundColor = c;
-                b.onclick = () => { selectedColor = c; setupHabitEditor(); };
-                colors.appendChild(b);
-            });
-        }
-
-        function deleteBoss(id) { if(confirm("Abandon raid?")) { App.bosses = App.bosses.filter(b=>b.id!==id); save(); renderBosses(); } }
-
-        /* --- CHART JS --- */
-        let chart;
-        function updateChart() {
-            const ctx = document.getElementById('statChart').getContext('2d');
-            if(chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['STR', 'INT', 'DEX', 'CHA'],
-                    datasets: [{
-                        label: 'Stats',
-                        data: [App.stats.str, App.stats.int, App.stats.dex, App.stats.cha],
-                        backgroundColor: 'rgba(255, 0, 60, 0.2)',
-                        borderColor: '#FF003C',
-                        pointBackgroundColor: '#fff'
-                    }]
-                },
-                options: {
-                    scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: 'white' }, ticks: { display: false } } },
-                    plugins: { legend: { display: false } }
-                }
-            });
+        function setupDifficultyButtons() {
+            const easyBtn = document.getElementById('difficulty-easy');
+            const mediumBtn = document.getElementById('difficulty-medium');
+            const hardBtn = document.getElementById('difficulty-hard');
+            
+            easyBtn.onclick = () => {
+                selectedDifficulty = 'easy';
+                easyBtn.classList.add('active', 'bg-green-500', 'text-white');
+                mediumBtn.classList.remove('active', 'bg-yellow-500', 'text-white');
+                hardBtn.classList.remove('active', 'bg-red-500', 'text-white');
+            };
+            
+            mediumBtn.onclick = () => {
+                selectedDifficulty = 'medium';
+                mediumBtn.classList.add('active', 'bg-yellow-500', 'text-white');
+                easyBtn.classList.remove('active', 'bg-green-500', 'text-white');
+                hardBtn.classList.remove('active', 'bg-red-500', 'text-white');
+            };
+            
+            hardBtn.onclick = () => {
+                selectedDifficulty = 'hard';
+                hardBtn.classList.add('active', 'bg-red-500', 'text-white');
+                easyBtn.classList.remove('active', 'bg-green-500', 'text-white');
+                mediumBtn.classList.remove('active', 'bg-yellow-500', 'text-white');
+            };
         }
 
         /* --- VISUALS --- */
