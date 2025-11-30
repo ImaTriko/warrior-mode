@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WARRIOR MODE: OMEGA</title>
+    
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+        /* --- THEME ENGINE --- */
+        :root {
+            --bg: #050505;
+            --card: #121212;
+            --text: #ffffff;
+            --primary: #FF003C;
+            --accent: #FEE801;
+            --border: rgba(255, 255, 255, 0.1);
+            --font-main: 'Rajdhani', sans-serif;
+            --font-head: 'Orbitron', sans-serif;
+            --glass: rgba(20, 20, 20, 0.85);
+        }
+
+        /* THEME: CYBER (Default) */
+        body.theme-cyber { --bg: #050505; --primary: #FF003C; --accent: #FEE801; }
+        
+        /* THEME: MATRIX */
+        body.theme-matrix { --bg: #000000; --card: #001100; --primary: #00FF41; --accent: #008F11; --text: #e0ffe0; --border: #003300; }
+        
+        /* THEME: LIGHT (Zen) */
+        body.theme-zen { --bg: #f0f0f0; --card: #ffffff; --primary: #333; --accent: #ff9900; --text: #111; --border: #ddd; --glass: rgba(255,255,255,0.9); }
+
+        /* THEME: RGB (Premium) */
+        body.theme-rgb { --bg: #080808; --card: #111; --primary: #ff00ff; --accent: #00ffff; }
+        body.theme-rgb .glass, body.theme-rgb .nav-btn.active {
+            animation: rgb-border 3s linear infinite;
+        }
+        @keyframes rgb-border {
+            0% { border-color: #ff0000; box-shadow: 0 0 5px #ff0000; }
+            33% { border-color: #00ff00; box-shadow: 0 0 5px #00ff00; }
+            66% { border-color: #0000ff; box-shadow: 0 0 5px #0000ff; }
+            100% { border-color: #ff0000; box-shadow: 0 0 5px #ff0000; }
+        }
+
+        /* THEME: OCEAN */
+        body.theme-ocean { --bg: #001f3f; --card: #003366; --primary: #0074D9; --accent: #7FDBFF; --text: #e6f7ff; --border: #00509e; }
+        
+        /* THEME: FOREST */
+        body.theme-forest { --bg: #0d1f0d; --card: #1a331a; --primary: #2E8B57; --accent: #90EE90; --text: #e6ffe6; --border: #2a5a2a; }
+        
+        /* THEME: SUNSET */
+        body.theme-sunset { --bg: #1a0f2e; --card: #2d1b47; --primary: #FF6B6B; --accent: #FFD166; --text: #fff5e6; --border: #5a2e8a; }
+        
+        /* THEME: NIGHT SKY */
+        body.theme-night { --bg: #0a0a2a; --card: #151540; --primary: #6A5ACD; --accent: #9370DB; --text: #e6e6fa; --border: #483D8B; }
+
+        /* MOOD-BASED THEMES */
+        body.mood-happy { --bg: #1a1a00; --card: #333300; --primary: #FFD700; --accent: #FFFF00; --text: #ffffe6; --border: #666600; }
+        body.mood-calm { --bg: #001a33; --card: #003366; --primary: #66CCFF; --accent: #99E6FF; --text: #e6f7ff; --border: #00509e; }
+        body.mood-focused { --bg: #0d0d0d; --card: #1a1a1a; --primary: #00CC66; --accent: #66FF99; --text: #e6ffe6; --border: #006633; }
+        body.mood-energetic { --bg: #330000; --card: #660000; --primary: #FF3300; --accent: #FF6633; --text: #ffe6e6; --border: #990000; }
+        body.mood-relaxed { --bg: #00331a; --card: #006633; --primary: #66CC99; --accent: #99FFCC; --text: #e6fff2; --border: #00994d; }
+
+        /* --- CORE CSS --- */
+        body { background-color: var(--bg); color: var(--text); font-family: var(--font-main); overflow: hidden; transition: 0.3s; }
+        .font-orbitron { font-family: var(--font-head); }
+        
+        .glass {
+            background: var(--glass); backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--border); }
+
+        /* Habit Card */
+        .habit-card { position: relative; overflow: hidden; transition: transform 0.1s; }
+        .habit-card:active { transform: scale(0.98); }
+        .habit-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--h-color); }
+
+        /* Animations */
+        @keyframes shake { 
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .anim-shake { animation: shake 0.4s; }
+
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        .anim-float { animation: float 3s ease-in-out infinite; }
+
+        input, select { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); outline: none; }
+        input:focus, select:focus { border-color: var(--primary); }
+
+        /* Share Card Styling */
+        #share-card { width: 300px; height: 400px; background: linear-gradient(135deg, var(--card) 0%, var(--bg) 100%); }
+        .share-card-content { padding: 20px; text-align: center; }
+        .share-card-title { font-family: var(--font-head); font-size: 24px; margin-bottom: 10px; color: var(--primary); }
+        .share-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .share-card-stat { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; }
+        .share-card-footer { margin-top: 20px; font-size: 12px; opacity: 0.7; }
+    </style>
+</head>
+<body class="h-screen flex flex-col relative select-none">
+
+    <!-- PARTICLES BG -->
+    <canvas id="particles" class="absolute inset-0 z-0 pointer-events-none opacity-40"></canvas>
+
+    <!-- HEADER -->
+    <header class="z-20 p-3 bg-black/80 backdrop-blur border-b border-white/5 shrink-0 flex justify-between items-center">
+        <!-- Profile -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('profile')">
+            <div class="relative">
+                <div class="w-12 h-12 rounded bg-gradient-to-t from-gray-900 to-gray-700 border border-white/20 flex items-center justify-center">
+                    <i class="fas fa-user-astronaut text-2xl text-gray-300"></i>
+                </div>
+                <div class="absolute -bottom-1 -right-1 bg-[var(--accent)] text-black text-[9px] font-bold px-1 rounded shadow">LVL <span id="hud-lvl">1</span></div>
+            </div>
+            <div>
+                <h2 id="hud-name" class="font-orbitron font-bold text-white leading-none uppercase tracking-wider">PLAYER</h2>
+                <div class="w-24 h-1.5 bg-gray-800 mt-1.5 rounded-full overflow-hidden">
+                    <div id="hud-xp-bar" class="h-full bg-[var(--primary)] w-0 transition-all duration-500 shadow-[0_0_5px_var(--primary)]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mood Selector -->
+        <div class="flex items-center gap-2">
+            <select id="mood-selector" class="bg-black/50 border border-white/20 text-xs p-1 rounded" onchange="setMood(this.value)">
+                <option value="">Select Mood</option>
+                <option value="happy">😊 Happy</option>
+                <option value="calm">😌 Calm</option>
+                <option value="focused">🎯 Focused</option>
+                <option value="energetic">⚡ Energetic</option>
+                <option value="relaxed">🌴 Relaxed</option>
+            </select>
+        </div>
+
+        <!-- Resources -->
+        <div class="text-right">
+            <div class="flex items-center justify-end gap-2 text-[var(--accent)] font-mono font-bold text-lg">
+                <span id="hud-gold">0</span> <i class="fas fa-coins text-xs"></i>
+            </div>
+            <div class="flex items-center gap-1 mt-1">
+                <i class="fas fa-heart text-red-600 text-xs animate-pulse"></i>
+                <div class="w-20 h-3 bg-gray-900 border border-red-900/50 rounded skew-x-[-10deg] overflow-hidden relative">
+                    <div id="hud-hp-bar" class="h-full bg-red-600 w-full transition-all duration-500"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-[8px] font-bold z-10 text-white"><span id="hud-hp">100</span>/100</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN VIEWS -->
+    <main id="app-views" class="flex-1 overflow-hidden relative z-10">
+        
+        <!-- 1. HABITS (Dashboard) -->
+        <div id="view-habits" class="view-section h-full flex flex-col p-4 overflow-y-auto custom-scroll">
+            <div class="flex justify-between items-end mb-4">
+                <h1 class="text-2xl font-orbitron text-white">PROTOCOLS</h1>
+                <div class="flex gap-2">
+                    <button onclick="openModal('archive-habits')" class="bg-gray-700 text-white w-8 h-8 rounded flex items-center justify-center hover:scale-110 transition shadow-lg"><i class="fas fa-archive"></i></button>
+                    <button onclick="openModal('create-habit')" class="bg-[var(--primary)] text-black w-8 h-8 rounded flex items-center justify-center hover:scale-110 transition shadow-lg"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+
+            <!-- Focus Timer Widget -->
+            <div class="glass p-3 rounded-lg mb-4 flex justify-between items-center border-l-2 border-blue-500">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-900/50 rounded flex items-center justify-center text-blue-400"><i class="fas fa-brain"></i></div>
+                    <div>
+                        <div class="text-xs font-bold text-blue-200">NEURAL LINK</div>
+                        <div class="text-[9px] text-gray-400">Focus Generator</div>
+                    </div>
+                </div>
+                <button onclick="openModal('focus-modal')" class="text-[9px] border border-blue-500 text-blue-500 px-2 py-1 rounded hover:bg-blue-500 hover:text-white transition">ACTIVATE</button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-4 gap-2 mb-4">
+                <div class="glass p-1.5 rounded text-center"><div class="text-[8px] text-gray-500">STR</div><div id="stat-str" class="text-xs font-bold text-[var(--primary)]">0</div></div>
+                <div class="glass p-1.5 rounded text-center"><div class="text-[8px] text-gray-500">INT</div><div id="stat-int" class="text-xs font-bold text-blue-400">0</div></div>
+                <div class="glass p-1.5 rounded text-center"><div class="text-[8px] text-gray-500">DEX</div><div id="stat-dex" class="text-xs font-bold text-green-400">0</div></div>
+                <div class="glass p-1.5 rounded text-center"><div class="text-[8px] text-gray-500">CHA</div><div id="stat-cha" class="text-xs font-bold text-purple-400">0</div></div>
+            </div>
+
+            <div id="habit-list" class="space-y-3 pb-20"></div>
+            <div id="empty-habits" class="hidden text-center mt-10 opacity-50"><p class="text-xs">NO ACTIVE PROTOCOLS</p></div>
+        </div>
+
+        <!-- 2. BATTLES (Bosses) -->
+        <div id="view-battles" class="view-section hidden h-full p-4 overflow-y-auto custom-scroll">
+            <div class="flex justify-between items-end mb-4">
+                <h1 class="text-2xl font-orbitron text-red-500">BOSS RAIDS</h1>
+                <button onclick="openModal('create-boss')" class="bg-red-600 text-white w-8 h-8 rounded flex items-center justify-center hover:scale-110 transition shadow-lg"><i class="fas fa-dragon"></i></button>
+            </div>
+            
+            <div id="boss-list" class="space-y-4 pb-20"></div>
+            <div id="empty-bosses" class="hidden text-center mt-20 opacity-50">
+                <i class="fas fa-peace text-4xl mb-2"></i>
+                <p class="text-xs">SECTOR CLEAR. NO THREATS.</p>
+            </div>
+        </div>
+
+        <!-- 3. SHOP & INVENTORY -->
+        <div id="view-shop" class="view-section hidden h-full p-4 overflow-y-auto custom-scroll">
+            <h1 class="text-2xl font-orbitron mb-4 text-[var(--accent)]">BLACK MARKET</h1>
+            
+            <div class="mb-6">
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-2">My Inventory</h3>
+                <div class="flex gap-2" id="inventory-list">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+
+            <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-2 border-b border-gray-800 pb-1">Consumables</h3>
+            <div class="grid gap-3 mb-6">
+                <div class="glass p-3 rounded flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-flask text-red-500 text-xl"></i>
+                        <div><div class="text-sm font-bold">Nano-Stimpack</div><div class="text-[9px] text-gray-400">+30 HP</div></div>
+                    </div>
+                    <button onclick="buyItem('potion', 50)" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">50 G</button>
+                </div>
+                <div class="glass p-3 rounded flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-snowflake text-blue-400 text-xl"></i>
+                        <div><div class="text-sm font-bold">Cryo-Freeze</div><div class="text-[9px] text-gray-400">Save Streak</div></div>
+                    </div>
+                    <button onclick="buyItem('freeze', 150)" class="bg-gray-800 border border-gray-600 text-xs px-3 py-1 rounded hover:border-[var(--accent)] text-[var(--accent)]">150 G</button>
+                </div>
+            </div>
+
+            <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-2 border-b border-gray-800 pb-1">System Themes</h3>
+            <div id="theme-list" class="grid grid-cols-2 gap-3 pb-20"></div>
+        </div>
+
+        <!-- 4. PROFILE -->
+        <div id="view-profile" class="view-section hidden h-full p-4 overflow-y-auto custom-scroll">
+            <h1 class="text-2xl font-orbitron mb-4 text-[var(--primary)]">SYSTEM CORE</h1>
+            
+            <!-- Share Progress Card -->
+            <div class="glass p-4 rounded mb-4">
+                <h3 class="text-xs font-bold mb-3 uppercase text-gray-400">Share Progress</h3>
+                <button onclick="generateShareCard()" class="w-full bg-white/5 p-3 rounded text-sm border border-white/10 hover:bg-white/10 flex items-center justify-center gap-2">
+                    <i class="fas fa-share-alt"></i> GENERATE PROGRESS CARD
+                </button>
+            </div>
+            
+            <div class="glass p-4 rounded mb-4">
+                <canvas id="statChart"></canvas>
+            </div>
+            
+            <div class="glass p-4 rounded mb-6">
+                <h3 class="text-xs font-bold mb-3 uppercase text-gray-400">Data Management</h3>
+                <div class="flex gap-2 mb-2">
+                    <button onclick="exportData('json')" class="flex-1 bg-white/5 p-2 rounded text-xs border border-white/10 hover:bg-white/10">EXPORT JSON</button>
+                    <button onclick="exportData('csv')" class="flex-1 bg-white/5 p-2 rounded text-xs border border-white/10 hover:bg-white/10">EXPORT CSV</button>
+                </div>
+                <div class="flex gap-2">
+                    <label class="flex-1 bg-white/5 p-2 rounded text-xs border border-white/10 hover:bg-white/10 text-center cursor-pointer">
+                        IMPORT JSON
+                        <input type="file" class="hidden" accept=".json" onchange="importData(this, 'json')">
+                    </label>
+                    <label class="flex-1 bg-white/5 p-2 rounded text-xs border border-white/10 hover:bg-white/10 text-center cursor-pointer">
+                        IMPORT CSV
+                        <input type="file" class="hidden" accept=".csv" onchange="importData(this, 'csv')">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="shrink-0 h-16 glass border-t border-white/5 flex justify-around items-center z-30 pb-safe">
+        <button onclick="switchView('habits')" class="nav-btn active flex flex-col items-center gap-1 text-gray-500 w-full hover:text-white transition"><i class="fas fa-list-check text-xl"></i><span class="text-[8px] font-bold tracking-widest">OPS</span></button>
+        <button onclick="switchView('battles')" class="nav-btn flex flex-col items-center gap-1 text-gray-500 w-full hover:text-red-500 transition"><i class="fas fa-skull text-xl"></i><span class="text-[8px] font-bold tracking-widest">RAID</span></button>
+        <button onclick="switchView('shop')" class="nav-btn flex flex-col items-center gap-1 text-gray-500 w-full hover:text-[var(--accent)] transition"><i class="fas fa-store text-xl"></i><span class="text-[8px] font-bold tracking-widest">DEPOT</span></button>
+        <button onclick="switchView('profile')" class="nav-btn flex flex-col items-center gap-1 text-gray-500 w-full hover:text-[var(--primary)] transition"><i class="fas fa-id-card text-xl"></i><span class="text-[8px] font-bold tracking-widest">CORE</span></button>
+    </nav>
+
+    <!-- MODALS -->
+    <!-- 1. Create Habit -->
+    <div id="create-habit" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-6 rounded-lg border border-white/10 relative">
+            <h2 class="text-lg font-orbitron mb-4">NEW PROTOCOL</h2>
+            <input type="text" id="habit-title" placeholder="Protocol Name" class="w-full p-3 rounded bg-black/50 mb-4">
+            
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <select id="habit-attr" class="w-full p-3 rounded bg-black/50">
+                    <option value="str">💪 STR (Body)</option>
+                    <option value="int">🧠 INT (Mind)</option>
+                    <option value="dex">⚡ DEX (Skill)</option>
+                    <option value="cha">👑 CHA (Social)</option>
+                </select>
+                <select id="habit-type" class="w-full p-3 rounded bg-black/50">
+                    <option value="good">➕ Build (Good)</option>
+                    <option value="bad">➖ Break (Bad)</option>
+                </select>
+            </div>
+
+            <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Icon & Color</label>
+            <div class="flex gap-2 mb-4 overflow-x-auto" id="habit-icons"></div>
+            <div class="flex gap-2 mb-6" id="habit-colors"></div>
+
+            <div class="flex gap-2">
+                <button onclick="closeModal('create-habit')" class="flex-1 py-3 text-gray-400 bg-white/5 rounded">CANCEL</button>
+                <button onclick="saveHabit()" class="flex-1 py-3 bg-[var(--primary)] text-black font-bold rounded">INITIATE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Edit Habit -->
+    <div id="edit-habit" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-6 rounded-lg border border-white/10 relative">
+            <h2 class="text-lg font-orbitron mb-4">EDIT PROTOCOL</h2>
+            <input type="text" id="edit-habit-title" placeholder="Protocol Name" class="w-full p-3 rounded bg-black/50 mb-4">
+            
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <select id="edit-habit-attr" class="w-full p-3 rounded bg-black/50">
+                    <option value="str">💪 STR (Body)</option>
+                    <option value="int">🧠 INT (Mind)</option>
+                    <option value="dex">⚡ DEX (Skill)</option>
+                    <option value="cha">👑 CHA (Social)</option>
+                </select>
+                <select id="edit-habit-type" class="w-full p-3 rounded bg-black/50">
+                    <option value="good">➕ Build (Good)</option>
+                    <option value="bad">➖ Break (Bad)</option>
+                </select>
+            </div>
+
+            <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Icon & Color</label>
+            <div class="flex gap-2 mb-4 overflow-x-auto" id="edit-habit-icons"></div>
+            <div class="flex gap-2 mb-6" id="edit-habit-colors"></div>
+
+            <div class="flex gap-2">
+                <button onclick="closeModal('edit-habit')" class="flex-1 py-3 text-gray-400 bg-white/5 rounded">CANCEL</button>
+                <button onclick="updateHabit()" class="flex-1 py-3 bg-[var(--primary)] text-black font-bold rounded">UPDATE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Archive Modal -->
+    <div id="archive-habits" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-6 rounded-lg border border-white/10 relative">
+            <h2 class="text-lg font-orbitron mb-4">ARCHIVED PROTOCOLS</h2>
+            <div id="archived-habits-list" class="max-h-64 overflow-y-auto mb-4"></div>
+            <button onclick="closeModal('archive-habits')" class="w-full py-3 text-gray-400 bg-white/5 rounded">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- 4. Create Boss -->
+    <div id="create-boss" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-6 rounded-lg border border-red-900/50 relative shadow-[0_0_30px_rgba(255,0,0,0.2)]">
+            <h2 class="text-lg font-orbitron mb-4 text-red-500">SUMMON BOSS</h2>
+            <input type="text" id="boss-title" placeholder="Threat Name (e.g. Finish Project)" class="w-full p-3 rounded bg-black/50 mb-4 border-red-900/30 focus:border-red-500">
+            
+            <div class="flex gap-3 mb-6">
+                <input type="number" id="boss-hp" placeholder="HP (Hours/Steps)" class="w-1/2 p-3 rounded bg-black/50">
+                <select id="boss-diff" class="w-1/2 p-3 rounded bg-black/50">
+                    <option value="1">Normal (1x)</option>
+                    <option value="1.5">Hard (1.5x)</option>
+                    <option value="2">Extreme (2x)</option>
+                </select>
+            </div>
+
+            <button onclick="saveBoss()" class="w-full py-3 bg-red-600 text-white font-bold rounded hover:bg-red-500">SUMMON</button>
+            <button onclick="closeModal('create-boss')" class="w-full py-2 mt-2 text-gray-500 text-xs">ABORT</button>
+        </div>
+    </div>
+
+    <!-- 5. Focus Mode -->
+    <div id="focus-modal" class="fixed inset-0 z-50 bg-black hidden flex flex-col items-center justify-center">
+        <div class="absolute inset-0 bg-blue-900/10 animate-pulse pointer-events-none"></div>
+        <div class="z-10 text-center">
+            <i class="fas fa-brain text-6xl text-blue-500 mb-6 drop-shadow-[0_0_15px_blue]"></i>
+            <h2 class="text-3xl font-orbitron text-white mb-2">NEURAL LINK</h2>
+            
+            <div id="focus-setup">
+                <div class="flex gap-4 mb-8">
+                    <button onclick="startFocus(15)" class="p-4 border border-blue-500/50 rounded bg-blue-900/20 hover:bg-blue-500 hover:text-white transition">15m</button>
+                    <button onclick="startFocus(25)" class="p-4 border border-blue-500/50 rounded bg-blue-900/20 hover:bg-blue-500 hover:text-white transition">25m</button>
+                    <button onclick="startFocus(45)" class="p-4 border border-blue-500/50 rounded bg-blue-900/20 hover:bg-blue-500 hover:text-white transition">45m</button>
+                </div>
+                <button onclick="closeModal('focus-modal')" class="text-gray-500">Close</button>
+            </div>
+
+            <div id="focus-active" class="hidden">
+                <div id="timer-display" class="text-6xl font-mono font-bold text-white mb-4">00:00</div>
+                <div class="text-blue-300 text-sm mb-6">Generating INT & GOLD...</div>
+                <button onclick="stopFocus()" class="px-6 py-2 border border-red-500 text-red-500 rounded hover:bg-red-900/50">BREAK LINK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Card Preview -->
+    <div id="share-card-preview" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-4">
+        <div class="glass p-6 rounded-lg border border-white/10 relative">
+            <h2 class="text-lg font-orbitron mb-4">SHARE PROGRESS</h2>
+            <div id="share-card" class="mx-auto">
+                <div class="share-card-content">
+                    <div class="share-card-title">WARRIOR MODE</div>
+                    <div class="text-lg font-bold" id="share-user-name">PLAYER</div>
+                    <div class="text-sm opacity-80 mb-4">Level <span id="share-level">1</span> Warrior</div>
+                    
+                    <div class="share-card-stats">
+                        <div class="share-card-stat">
+                            <div class="text-xs opacity-70">Habits</div>
+                            <div class="text-lg font-bold" id="share-habits-count">0</div>
+                        </div>
+                        <div class="share-card-stat">
+                            <div class="text-xs opacity-70">Streak</div>
+                            <div class="text-lg font-bold" id="share-streak">0</div>
+                        </div>
+                        <div class="share-card-stat">
+                            <div class="text-xs opacity-70">Gold</div>
+                            <div class="text-lg font-bold" id="share-gold">0</div>
+                        </div>
+                        <div class="share-card-stat">
+                            <div class="text-xs opacity-70">Bosses</div>
+                            <div class="text-lg font-bold" id="share-bosses">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-sm" id="share-quote">"Keep pushing forward!"</div>
+                    <div class="share-card-footer">Generated on <span id="share-date">Today</span></div>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+                <button onclick="closeModal('share-card-preview')" class="flex-1 py-3 text-gray-400 bg-white/5 rounded">CLOSE</button>
+                <button onclick="downloadShareCard()" class="flex-1 py-3 bg-[var(--primary)] text-black font-bold rounded">DOWNLOAD</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding -->
+    <div id="onboarding" class="fixed inset-0 z-[100] bg-black flex items-center justify-center hidden">
+        <div class="glass p-8 rounded-xl text-center border border-[var(--primary)] max-w-sm mx-4">
+            <h1 class="text-3xl font-orbitron text-[var(--primary)] mb-4">WARRIOR MODE</h1>
+            <p class="text-gray-400 mb-6 text-sm">Gamify your life. Destroy bad habits. Build your character.</p>
+            <input type="text" id="hero-name" placeholder="ENTER CODENAME" class="w-full p-3 text-center bg-white/10 rounded mb-4 uppercase font-bold tracking-widest text-white border border-white/20 focus:border-[var(--primary)]">
+            <button onclick="initUser()" class="w-full py-3 bg-[var(--primary)] text-black font-bold font-orbitron rounded">INITIALIZE</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- AUDIO ENGINE --- */
+        const SFX = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            play(type) {
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                const t = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+
+                if(type === 'click') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(800, t); 
+                    gain.gain.setValueAtTime(0.05, t); gain.gain.exponentialRampToValueAtTime(0.001, t+0.1);
+                    osc.start(t); osc.stop(t+0.1);
+                } else if (type === 'xp') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t+0.2);
+                    gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.3);
+                    osc.start(t); osc.stop(t+0.3);
+                } else if (type === 'damage') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, t); osc.frequency.linearRampToValueAtTime(50, t+0.2);
+                    gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.2);
+                    osc.start(t); osc.stop(t+0.2);
+                }
+            }
+        };
+
+        /* --- STATE --- */
+        const DEFAULT_STATE = {
+            user: { name: null, level: 1, xp: 0, hp: 100, maxHp: 100, gold: 0, lastLogin: null },
+            stats: { str: 0, int: 0, dex: 0, cha: 0 },
+            habits: [],
+            archivedHabits: [],
+            bosses: [],
+            inventory: { potion: 0, freeze: 0 },
+            unlockedThemes: ['cyber'],
+            activeTheme: 'cyber',
+            currentMood: null
+        };
+        
+        let App = JSON.parse(localStorage.getItem('WARRIOR_V4')) || DEFAULT_STATE;
+        let focusInterval;
+        let editingHabitId = null;
+
+        /* --- CORE --- */
+        function init() {
+            if(!App.user.name) document.getElementById('onboarding').classList.remove('hidden');
+            else {
+                applyTheme(App.activeTheme);
+                if (App.currentMood) setMood(App.currentMood, false);
+                checkDailyReset();
+                renderAll();
+                startParticles();
+            }
+        }
+
+        function save() {
+            localStorage.setItem('WARRIOR_V4', JSON.stringify(App));
+            updateHUD();
+        }
+
+        function initUser() {
+            const name = document.getElementById('hero-name').value;
+            if(!name) return;
+            App.user.name = name;
+            App.user.lastLogin = new Date().toISOString().split('T')[0];
+            save();
+            document.getElementById('onboarding').classList.add('hidden');
+            init();
+        }
+
+        function checkDailyReset() {
+            const today = new Date().toISOString().split('T')[0];
+            if(App.user.lastLogin !== today) {
+                // Check missed habits (Build type only)
+                const missed = App.habits.filter(h => h.type === 'good' && !h.history.includes(App.user.lastLogin));
+                if(missed.length > 0) {
+                    if(App.inventory.freeze > 0) {
+                        App.inventory.freeze--;
+                        alert("❄️ STREAK FREEZE ACTIVATED! Progress Saved.");
+                    } else {
+                        const dmg = missed.length * 10;
+                        takeDamage(dmg);
+                        alert(`⚠️ MISSED PROTOCOLS DETECTED. -${dmg} HP`);
+                    }
+                }
+                App.user.lastLogin = today;
+                save();
+            }
+        }
+
+        /* --- HABITS --- */
+        const ICONS = ['⚔️','🛡️','🧠','⚡','💧','🔥','💰','📚','🏋️','🧘'];
+        const COLORS = ['#FF003C', '#00F0FF', '#00FF41', '#FEE801', '#9D00FF'];
+        let selectedIcon = ICONS[0];
+        let selectedColor = COLORS[0];
+
+        function renderAll() {
+            renderHabits();
+            renderBosses();
+            renderInventory();
+            renderShop();
+            updateChart();
+            updateHUD();
+        }
+
+        function renderHabits() {
+            const list = document.getElementById('habit-list');
+            list.innerHTML = '';
+            const today = new Date().toISOString().split('T')[0];
+            
+            if(App.habits.length === 0) document.getElementById('empty-habits').classList.remove('hidden');
+            else document.getElementById('empty-habits').classList.add('hidden');
+
+            App.habits.forEach(h => {
+                const isDone = h.history.includes(today);
+                const streak = calculateStreak(h);
+                const el = document.createElement('div');
+                
+                // Style differentiation for Good vs Bad habits
+                const isBad = h.type === 'bad';
+                
+                el.className = `habit-card glass p-3 rounded flex items-center gap-3 ${isDone ? 'opacity-50 grayscale' : ''}`;
+                el.style.setProperty('--h-color', h.color);
+                
+                el.innerHTML = `
+                    <div class="w-10 h-10 rounded bg-black/30 flex items-center justify-center text-xl shadow-inner">${h.icon}</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between">
+                            <h3 class="font-bold text-white text-sm">${h.title}</h3>
+                            ${!isBad ? `<span class="text-[9px] font-mono text-orange-500"><i class="fas fa-fire"></i> ${streak}</span>` : ''}
+                        </div>
+                        <div class="text-[9px] uppercase text-gray-500 font-bold">${h.attr} | ${isBad ? 'BREAK' : 'BUILD'}</div>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="${isBad ? `doBadHabit('${h.id}')` : `completeHabit('${h.id}')`}" 
+                            class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition ${isBad ? 'text-red-500' : 'text-[var(--accent)]'}">
+                            ${isDone ? '<i class="fas fa-check"></i>' : (isBad ? '<i class="fas fa-skull"></i>' : '<i class="fas fa-play"></i>')}
+                        </button>
+                        <button onclick="editHabit('${h.id}')" class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition text-blue-400"><i class="fas fa-edit text-xs"></i></button>
+                        <button onclick="archiveHabit('${h.id}')" class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition text-yellow-400"><i class="fas fa-archive text-xs"></i></button>
+                        <button onclick="deleteHabit('${h.id}')" class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition text-red-400"><i class="fas fa-trash text-xs"></i></button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function renderArchivedHabits() {
+            const list = document.getElementById('archived-habits-list');
+            list.innerHTML = '';
+            
+            if(App.archivedHabits.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-500 text-xs py-4">No archived protocols</p>';
+                return;
+            }
+
+            App.archivedHabits.forEach(h => {
+                const streak = calculateStreak(h);
+                const el = document.createElement('div');
+                const isBad = h.type === 'bad';
+                
+                el.className = `habit-card glass p-3 rounded flex items-center gap-3 mb-2`;
+                el.style.setProperty('--h-color', h.color);
+                
+                el.innerHTML = `
+                    <div class="w-8 h-8 rounded bg-black/30 flex items-center justify-center text-lg">${h.icon}</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between">
+                            <h3 class="font-bold text-white text-sm">${h.title}</h3>
+                            ${!isBad ? `<span class="text-[9px] font-mono text-orange-500">${streak}</span>` : ''}
+                        </div>
+                        <div class="text-[9px] uppercase text-gray-500 font-bold">${h.attr} | ${isBad ? 'BREAK' : 'BUILD'}</div>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="unarchiveHabit('${h.id}')" class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition text-green-400"><i class="fas fa-undo text-xs"></i></button>
+                        <button onclick="deleteHabit('${h.id}', true)" class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/10 transition text-red-400"><i class="fas fa-trash text-xs"></i></button>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function completeHabit(id) {
+            const h = App.habits.find(x => x.id === id);
+            const today = new Date().toISOString().split('T')[0];
+            if(!h.history.includes(today)) {
+                h.history.push(today);
+                gainRewards(15, 10, h.attr);
+                confetti();
+                save();
+                renderHabits();
+            }
+        }
+
+        function doBadHabit(id) {
+            const h = App.habits.find(x => x.id === id);
+            const today = new Date().toISOString().split('T')[0];
+            if(!h.history.includes(today)) {
+                if(confirm("Confirm: You succumbed to this bad habit? (-15 HP)")) {
+                    h.history.push(today);
+                    takeDamage(15);
+                    save();
+                    renderHabits();
+                }
+            }
+        }
+
+        function saveHabit() {
+            const title = document.getElementById('habit-title').value;
+            if(!title) return;
+            App.habits.push({
+                id: Date.now().toString(),
+                title,
+                attr: document.getElementById('habit-attr').value,
+                type: document.getElementById('habit-type').value,
+                icon: selectedIcon,
+                color: selectedColor,
+                history: []
+            });
+            closeModal('create-habit');
+            save();
+            renderHabits();
+        }
+
+        function editHabit(id) {
+            const h = App.habits.find(x => x.id === id);
+            if(!h) return;
+            
+            editingHabitId = id;
+            document.getElementById('edit-habit-title').value = h.title;
+            document.getElementById('edit-habit-attr').value = h.attr;
+            document.getElementById('edit-habit-type').value = h.type;
+            
+            // Set selected icon and color
+            selectedIcon = h.icon;
+            selectedColor = h.color;
+            
+            setupHabitEditor();
+            openModal('edit-habit');
+        }
+
+        function updateHabit() {
+            if(!editingHabitId) return;
+            
+            const h = App.habits.find(x => x.id === editingHabitId);
+            if(!h) return;
+            
+            h.title = document.getElementById('edit-habit-title').value;
+            h.attr = document.getElementById('edit-habit-attr').value;
+            h.type = document.getElementById('edit-habit-type').value;
+            h.icon = selectedIcon;
+            h.color = selectedColor;
+            
+            closeModal('edit-habit');
+            save();
+            renderHabits();
+            editingHabitId = null;
+        }
+
+        function archiveHabit(id) {
+            if(confirm("Archive this protocol?")) {
+                const h = App.habits.find(x => x.id === id);
+                if(h) {
+                    App.habits = App.habits.filter(x => x.id !== id);
+                    App.archivedHabits.push(h);
+                    save();
+                    renderHabits();
+                }
+            }
+        }
+
+        function unarchiveHabit(id) {
+            const h = App.archivedHabits.find(x => x.id === id);
+            if(h) {
+                App.archivedHabits = App.archivedHabits.filter(x => x.id !== id);
+                App.habits.push(h);
+                save();
+                renderHabits();
+                renderArchivedHabits();
+            }
+        }
+
+        function deleteHabit(id, fromArchive = false) {
+            if(confirm("Permanently delete this protocol?")) {
+                if(fromArchive) {
+                    App.archivedHabits = App.archivedHabits.filter(h => h.id !== id);
+                    renderArchivedHabits();
+                } else {
+                    App.habits = App.habits.filter(h => h.id !== id);
+                    renderHabits();
+                }
+                save();
+            }
+        }
+
+        /* --- BOSSES --- */
+        function renderBosses() {
+            const list = document.getElementById('boss-list');
+            list.innerHTML = '';
+            if(App.bosses.length === 0) document.getElementById('empty-bosses').classList.remove('hidden');
+            else document.getElementById('empty-bosses').classList.add('hidden');
+
+            App.bosses.forEach(b => {
+                const hpPct = (b.hp / b.maxHp) * 100;
+                const el = document.createElement('div');
+                el.className = 'glass p-4 rounded border border-red-900/30 relative overflow-hidden group';
+                el.innerHTML = `
+                    <div class="flex justify-between items-center mb-2 relative z-10">
+                        <span class="font-orbitron text-red-400 font-bold">${b.title}</span>
+                        <span class="text-xs text-red-300 font-mono">${b.hp}/${b.maxHp} HP</span>
+                    </div>
+                    <div class="w-full h-3 bg-black rounded-full overflow-hidden relative z-10 border border-red-900/50">
+                        <div class="h-full bg-red-600 transition-all" style="width: ${hpPct}%"></div>
+                    </div>
+                    <button onclick="attackBoss(${b.id})" class="absolute inset-0 z-20 bg-red-900/0 hover:bg-red-900/20 transition flex items-center justify-center opacity-0 group-hover:opacity-100 font-bold tracking-widest text-red-100">
+                        ATTACK
+                    </button>
+                    <button onclick="deleteBoss(${b.id})" class="absolute top-2 right-2 z-30 text-xs text-red-900 hover:text-red-500"><i class="fas fa-times"></i></button>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function saveBoss() {
+            const title = document.getElementById('boss-title').value;
+            const hp = parseInt(document.getElementById('boss-hp').value) || 10;
+            const diff = parseFloat(document.getElementById('boss-diff').value);
+            if(!title) return;
+            App.bosses.push({ id: Date.now(), title, hp, maxHp: hp, diff });
+            closeModal('create-boss');
+            save();
+            renderBosses();
+        }
+
+        function attackBoss(id) {
+            const b = App.bosses.find(x => x.id === id);
+            b.hp--;
+            SFX.play('damage'); // Reusing damage sound for impact
+            document.body.classList.add('anim-shake');
+            setTimeout(() => document.body.classList.remove('anim-shake'), 400);
+
+            if(b.hp <= 0) {
+                const xp = b.maxHp * 20 * b.diff;
+                const gold = b.maxHp * 10 * b.diff;
+                gainRewards(xp, gold, 'str');
+                App.bosses = App.bosses.filter(x => x.id !== id);
+                alert(`BOSS ELIMINATED! +${xp} XP | +${gold} GOLD`);
+            }
+            save();
+            renderBosses();
+        }
+
+        /* --- SHOP & INVENTORY --- */
+        const THEMES = [
+            { id: 'cyber', name: 'Cyberpunk', cost: 0 },
+            { id: 'matrix', name: 'The Matrix', cost: 300 },
+            { id: 'zen', name: 'Zen Light', cost: 300 },
+            { id: 'rgb', name: 'Gamer RGB', cost: 1000 },
+            { id: 'ocean', name: 'Deep Ocean', cost: 500 },
+            { id: 'forest', name: 'Emerald Forest', cost: 500 },
+            { id: 'sunset', name: 'Crimson Sunset', cost: 500 },
+            { id: 'night', name: 'Starry Night', cost: 700 }
+        ];
+
+        function renderInventory() {
+            const inv = document.getElementById('inventory-list');
+            inv.innerHTML = '';
+            if(App.inventory.potion > 0) inv.innerHTML += `<div onclick="useItem('potion')" class="glass px-3 py-1 rounded text-xs cursor-pointer border border-red-900/50 hover:bg-red-900/20">❤️ Potion x${App.inventory.potion}</div>`;
+            if(App.inventory.freeze > 0) inv.innerHTML += `<div class="glass px-3 py-1 rounded text-xs cursor-pointer border border-blue-900/50">❄️ Freeze x${App.inventory.freeze}</div>`;
+            if(inv.innerHTML === '') inv.innerHTML = '<span class="text-xs text-gray-600">Empty</span>';
+        }
+
+        function renderShop() {
+            const list = document.getElementById('theme-list');
+            list.innerHTML = '';
+            THEMES.forEach(t => {
+                const owned = App.unlockedThemes.includes(t.id);
+                const active = App.activeTheme === t.id;
+                list.innerHTML += `
+                    <div class="glass p-3 rounded flex flex-col justify-between ${active ? 'border-[var(--primary)]' : ''}">
+                        <div class="text-sm font-bold mb-1">${t.name}</div>
+                        ${owned ? 
+                            `<button onclick="applyTheme('${t.id}')" class="text-[10px] py-1 rounded ${active ? 'bg-white text-black' : 'bg-gray-700'}">${active ? 'EQUIPPED' : 'EQUIP'}</button>` :
+                            `<button onclick="buyTheme('${t.id}', ${t.cost})" class="text-[10px] py-1 rounded bg-[var(--accent)] text-black">BUY ${t.cost} G</button>`
+                        }
+                    </div>
+                `;
+            });
+        }
+
+        function buyTheme(id, cost) {
+            if(App.user.gold >= cost) {
+                App.user.gold -= cost;
+                App.unlockedThemes.push(id);
+                SFX.play('xp');
+                applyTheme(id);
+                save();
+                renderAll();
+            } else alert("Insufficient Funds");
+        }
+
+        function applyTheme(id) {
+            document.body.className = `h-screen flex flex-col relative select-none theme-${id}`;
+            App.activeTheme = id;
+            save();
+            renderShop();
+        }
+
+        function useItem(type) {
+            if(type === 'potion' && App.inventory.potion > 0) {
+                if(App.user.hp >= App.user.maxHp) return;
+                App.inventory.potion--;
+                App.user.hp = Math.min(App.user.maxHp, App.user.hp + 30);
+                SFX.play('xp');
+                save();
+                renderAll();
+            }
+        }
+
+        function buyItem(type, cost) {
+            if(App.user.gold >= cost) {
+                App.user.gold -= cost;
+                App.inventory[type]++;
+                SFX.play('xp');
+                save();
+                renderAll();
+            } else alert("Insufficient Gold");
+        }
+
+        /* --- MOOD SYSTEM --- */
+        function setMood(mood, saveToState = true) {
+            if (!mood) return;
+            
+            // Remove any existing mood classes
+            document.body.classList.remove('mood-happy', 'mood-calm', 'mood-focused', 'mood-energetic', 'mood-relaxed');
+            
+            // Add the selected mood class
+            document.body.classList.add(`mood-${mood}`);
+            
+            // Update the selector
+            document.getElementById('mood-selector').value = mood;
+            
+            if (saveToState) {
+                App.currentMood = mood;
+                save();
+            }
+        }
+
+        /* --- FOCUS TIMER --- */
+        function startFocus(min) {
+            document.getElementById('focus-setup').classList.add('hidden');
+            document.getElementById('focus-active').classList.remove('hidden');
+            let sec = min * 60;
+            const display = document.getElementById('timer-display');
+            
+            focusInterval = setInterval(() => {
+                sec--;
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                display.innerText = `${m}:${s<10?'0'+s:s}`;
+                if(sec <= 0) {
+                    clearInterval(focusInterval);
+                    gainRewards(min*5, min*2, 'int');
+                    alert("NEURAL LINK COMPLETE. DATA UPLOADED.");
+                    stopFocus();
+                }
+            }, 1000);
+        }
+
+        function stopFocus() {
+            clearInterval(focusInterval);
+            document.getElementById('focus-setup').classList.remove('hidden');
+            document.getElementById('focus-active').classList.add('hidden');
+            closeModal('focus-modal');
+        }
+
+        /* --- SHARE FUNCTIONALITY --- */
+        function generateShareCard() {
+            // Update share card content
+            document.getElementById('share-user-name').textContent = App.user.name || 'PLAYER';
+            document.getElementById('share-level').textContent = App.user.level;
+            document.getElementById('share-habits-count').textContent = App.habits.length;
+            document.getElementById('share-streak').textContent = calculateLongestStreak();
+            document.getElementById('share-gold').textContent = App.user.gold;
+            document.getElementById('share-bosses').textContent = App.bosses.length;
+            document.getElementById('share-date').textContent = new Date().toLocaleDateString();
+            
+            // Set a motivational quote based on level
+            const quotes = [
+                "Keep pushing forward!",
+                "Every step counts!",
+                "Consistency is key!",
+                "You're getting stronger!",
+                "Level up your life!",
+                "Warriors never quit!"
+            ];
+            document.getElementById('share-quote').textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+            
+            openModal('share-card-preview');
+        }
+
+        function downloadShareCard() {
+            html2canvas(document.getElementById('share-card')).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `warrior-progress-${new Date().toISOString().split('T')[0]}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        /* --- IMPORT/EXPORT --- */
+        function exportData(format) {
+            if (format === 'json') {
+                const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(App));
+                const a = document.createElement('a'); 
+                a.href = d; 
+                a.download = 'warrior_save.json'; 
+                a.click();
+            } else if (format === 'csv') {
+                // Create CSV content for habits
+                let csvContent = "id,title,attr,type,icon,color,history\n";
+                
+                App.habits.forEach(h => {
+                    const historyStr = h.history.join(';');
+                    csvContent += `${h.id},${h.title},${h.attr},${h.type},${h.icon},${h.color},"${historyStr}"\n`;
+                });
+                
+                const d = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+                const a = document.createElement('a'); 
+                a.href = d; 
+                a.download = 'warrior_habits.csv'; 
+                a.click();
+            }
+        }
+
+        function importData(input, format) {
+            const f = input.files[0];
+            const r = new FileReader();
+            
+            r.onload = (e) => { 
+                try { 
+                    if (format === 'json') {
+                        App = JSON.parse(e.target.result); 
+                        save(); 
+                        location.reload(); 
+                    } else if (format === 'csv') {
+                        // Parse CSV and import habits
+                        const text = e.target.result;
+                        const lines = text.split('\n');
+                        const headers = lines[0].split(',');
+                        
+                        // Clear existing habits
+                        App.habits = [];
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            if (!lines[i].trim()) continue;
+                            
+                            const values = lines[i].split(',');
+                            const habit = {};
+                            
+                            headers.forEach((header, index) => {
+                                let value = values[index];
+                                // Remove quotes if present
+                                if (value.startsWith('"') && value.endsWith('"')) {
+                                    value = value.substring(1, value.length - 1);
+                                }
+                                habit[header] = value;
+                            });
+                            
+                            // Convert history string back to array
+                            if (habit.history) {
+                                habit.history = habit.history.split(';');
+                            } else {
+                                habit.history = [];
+                            }
+                            
+                            App.habits.push(habit);
+                        }
+                        
+                        save();
+                        location.reload();
+                    }
+                } catch(x) { 
+                    alert("Corrupt Data"); 
+                } 
+            };
+            r.readAsText(f);
+        }
+
+        /* --- HELPERS --- */
+        function gainRewards(xp, gold, attr) {
+            App.user.xp += xp;
+            App.user.gold += gold;
+            if(attr) App.stats[attr]++;
+            
+            // Level Up
+            if(App.user.xp >= App.user.level * 100) {
+                App.user.level++;
+                App.user.xp = 0;
+                App.user.maxHp += 10;
+                App.user.hp = App.user.maxHp;
+                SFX.play('xp');
+                alert("LEVEL UP! SYSTEM UPGRADED.");
+            } else {
+                SFX.play('xp');
+            }
+            updateHUD();
+        }
+
+        function takeDamage(amount) {
+            App.user.hp = Math.max(0, App.user.hp - amount);
+            SFX.play('damage');
+            document.body.classList.add('anim-shake');
+            setTimeout(() => document.body.classList.remove('anim-shake'), 400);
+            updateHUD();
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-name').innerText = App.user.name || 'GHOST';
+            document.getElementById('hud-lvl').innerText = App.user.level;
+            document.getElementById('hud-gold').innerText = App.user.gold;
+            document.getElementById('hud-hp').innerText = Math.ceil(App.user.hp);
+            document.getElementById('hud-xp-bar').style.width = `${(App.user.xp / (App.user.level*100))*100}%`;
+            document.getElementById('hud-hp-bar').style.width = `${(App.user.hp / App.user.maxHp)*100}%`;
+            
+            ['str','int','dex','cha'].forEach(k => document.getElementById(`stat-${k}`).innerText = App.stats[k]);
+        }
+
+        function calculateStreak(h) {
+            let streak = 0;
+            const ms = 86400000;
+            const today = new Date().setHours(0,0,0,0);
+            for(let i=0; i<365; i++) {
+                const d = new Date(today - (i*ms)).toISOString().split('T')[0];
+                if(h.history.includes(d)) streak++;
+                else if(i===0) continue;
+                else break;
+            }
+            return streak;
+        }
+
+        function calculateLongestStreak() {
+            let longest = 0;
+            App.habits.forEach(h => {
+                const streak = calculateStreak(h);
+                if (streak > longest) longest = streak;
+            });
+            return longest;
+        }
+
+        /* --- UI UTILS --- */
+        function switchView(id) {
+            document.querySelectorAll('.view-section').forEach(e => e.classList.add('hidden'));
+            document.getElementById(`view-${id}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('active', 'text-[var(--primary)]', 'text-white');
+                b.classList.add('text-gray-500');
+            });
+            event.currentTarget.classList.remove('text-gray-500');
+            event.currentTarget.classList.add('active', 'text-white');
+            
+            if (id === 'profile') {
+                updateChart();
+            }
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'create-habit') setupHabitCreator();
+            if(id === 'archive-habits') renderArchivedHabits();
+        }
+        
+        function closeModal(id) { 
+            document.getElementById(id).classList.add('hidden'); 
+            if (id === 'edit-habit') editingHabitId = null;
+        }
+
+        function setupHabitCreator() {
+            const icons = document.getElementById('habit-icons');
+            icons.innerHTML = '';
+            ICONS.forEach(i => {
+                const b = document.createElement('div');
+                b.className = `p-2 text-xl cursor-pointer rounded hover:bg-white/10 ${i===selectedIcon?'bg-white/20':''}`;
+                b.innerText = i;
+                b.onclick = () => { selectedIcon = i; setupHabitCreator(); };
+                icons.appendChild(b);
+            });
+            const colors = document.getElementById('habit-colors');
+            colors.innerHTML = '';
+            COLORS.forEach(c => {
+                const b = document.createElement('div');
+                b.className = `w-6 h-6 rounded-full cursor-pointer border-2 ${c===selectedColor?'border-white':'border-transparent'}`;
+                b.style.backgroundColor = c;
+                b.onclick = () => { selectedColor = c; setupHabitCreator(); };
+                colors.appendChild(b);
+            });
+        }
+
+        function setupHabitEditor() {
+            const icons = document.getElementById('edit-habit-icons');
+            icons.innerHTML = '';
+            ICONS.forEach(i => {
+                const b = document.createElement('div');
+                b.className = `p-2 text-xl cursor-pointer rounded hover:bg-white/10 ${i===selectedIcon?'bg-white/20':''}`;
+                b.innerText = i;
+                b.onclick = () => { selectedIcon = i; setupHabitEditor(); };
+                icons.appendChild(b);
+            });
+            const colors = document.getElementById('edit-habit-colors');
+            colors.innerHTML = '';
+            COLORS.forEach(c => {
+                const b = document.createElement('div');
+                b.className = `w-6 h-6 rounded-full cursor-pointer border-2 ${c===selectedColor?'border-white':'border-transparent'}`;
+                b.style.backgroundColor = c;
+                b.onclick = () => { selectedColor = c; setupHabitEditor(); };
+                colors.appendChild(b);
+            });
+        }
+
+        function deleteBoss(id) { if(confirm("Abandon raid?")) { App.bosses = App.bosses.filter(b=>b.id!==id); save(); renderBosses(); } }
+
+        /* --- CHART JS --- */
+        let chart;
+        function updateChart() {
+            const ctx = document.getElementById('statChart').getContext('2d');
+            if(chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['STR', 'INT', 'DEX', 'CHA'],
+                    datasets: [{
+                        label: 'Stats',
+                        data: [App.stats.str, App.stats.int, App.stats.dex, App.stats.cha],
+                        backgroundColor: 'rgba(255, 0, 60, 0.2)',
+                        borderColor: '#FF003C',
+                        pointBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: 'white' }, ticks: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        /* --- VISUALS --- */
+        function confetti() {
+            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#0ff'];
+            for(let i=0; i<40; i++) {
+                const p = document.createElement('div');
+                p.style.cssText = `position:fixed; top:50%; left:50%; width:5px; height:5px; background:${colors[Math.floor(Math.random()*colors.length)]}; pointer-events:none; z-index:99;`;
+                document.body.appendChild(p);
+                const a = Math.random()*Math.PI*2, v = Math.random()*200+50;
+                p.animate([{transform:'translate(0,0)'}, {transform:`translate(${Math.cos(a)*v}px, ${Math.sin(a)*v}px)`, opacity:0}], {duration:800}).onfinish = () => p.remove();
+            }
+        }
+
+        function startParticles() {
+            const c = document.getElementById('particles'); const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            const p = Array(40).fill().map(() => ({x:Math.random()*c.width, y:Math.random()*c.height, v:Math.random()*0.5+0.1, s:Math.random()*2}));
+            function loop() {
+                ctx.clearRect(0,0,c.width,c.height);
+                ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                p.forEach(i => { i.y-=i.v; if(i.y<0) i.y=c.height; ctx.beginPath(); ctx.arc(i.x,i.y,i.s,0,Math.PI*2); ctx.fill(); });
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
